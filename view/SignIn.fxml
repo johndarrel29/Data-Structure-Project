@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SignInController">
+   <children>
+      <Pane fx:id="loginPane" layoutX="260.0" layoutY="50.0" prefHeight="550.0" prefWidth="681.0">
+         <children>
+            <PasswordField fx:id="loginPassword" layoutX="240.0" layoutY="282.0" prefHeight="42.0" prefWidth="327.0" promptText="Enter password" />
+            <Label layoutX="114.0" layoutY="269.0" prefHeight="68.0" prefWidth="139.0" text="Password:">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <TextField fx:id="loginUsername" layoutX="240.0" layoutY="227.0" prefHeight="42.0" prefWidth="327.0" promptText="Enter username" />
+            <Label layoutX="114.0" layoutY="214.0" prefHeight="68.0" prefWidth="139.0" text="Username:">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="292.0" layoutY="103.0" prefHeight="79.0" prefWidth="139.0" text="LOG IN ">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Label>
+            <Button fx:id="loginButton" layoutX="325.0" layoutY="350.0" mnemonicParsing="false" onAction="#CheckLogin" prefHeight="42.0" prefWidth="73.0" text="Log In" />
+            <Hyperlink fx:id="goToSignup" layoutX="428.0" layoutY="354.0" onAction="#switchPane" prefHeight="35.0" prefWidth="139.0" text="Don't have an account?" />
+         </children>
+      </Pane>
+      <Pane fx:id="signUpPane" layoutX="260.0" layoutY="50.0" prefHeight="550.0" prefWidth="681.0" visible="false">
+         <children>
+            <PasswordField fx:id="InsertPassword" layoutX="240.0" layoutY="282.0" prefHeight="42.0" prefWidth="327.0" promptText="Enter password" />
+            <Label layoutX="114.0" layoutY="269.0" prefHeight="68.0" prefWidth="139.0" text="Password:">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <TextField fx:id="InsertUsername" layoutX="240.0" layoutY="227.0" prefHeight="42.0" prefWidth="327.0" promptText="Enter username" />
+            <Label layoutX="114.0" layoutY="214.0" prefHeight="68.0" prefWidth="139.0" text="Username:">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="292.0" layoutY="103.0" prefHeight="79.0" prefWidth="139.0" text="Sign Up">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Label>
+            <Button fx:id="createAccountButton" layoutX="300.0" layoutY="351.0" mnemonicParsing="false" onAction="#signup" prefHeight="42.0" prefWidth="124.0" text="Create Account" />
+            <Hyperlink fx:id="goToLogin" layoutX="431.0" layoutY="355.0" onAction="#switchPane" prefHeight="35.0" prefWidth="192.0" text="Already have an account?" />
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
