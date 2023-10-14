@@ -19,7 +19,6 @@
           <TableColumn fx:id="userTaskList" prefWidth="242.0" text="User Task" />
         </columns>
       </TableView>
-      <Button fx:id="refreshButton" layoutX="543.0" layoutY="129.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="88.0" text="Refresh" />
-      <Button fx:id="deleteButton" layoutX="643.0" layoutY="128.0" mnemonicParsing="false" onAction="#deletetask" prefHeight="52.0" prefWidth="68.0" text="Delete" />
+      <Button fx:id="deleteButton" layoutX="541.0" layoutY="128.0" mnemonicParsing="false" onAction="#deletetask" prefHeight="52.0" prefWidth="68.0" text="Delete" />
    </children>
 </AnchorPane>

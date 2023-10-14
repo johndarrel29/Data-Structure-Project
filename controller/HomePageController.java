@@ -35,7 +35,7 @@ public class HomePageController implements Initializable {
 
 
     @FXML
-    Button logoutButton, taskButton, refreshTable;
+    Button logoutButton, taskButton;
 
     @FXML
     Label displayUsername;
