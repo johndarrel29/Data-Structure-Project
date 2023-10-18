@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.Stack;
 
 import alert.AlertMaker;
 
@@ -30,12 +31,13 @@ import javafx.stage.Stage;
 import model.DataStored;
 import model.Database;
 import model.UserTask;
+import model.UserTaskMemento;
 
 public class HomePageController implements Initializable {
 
 
     @FXML
-    Button logoutButton, taskButton;
+    Button logoutButton, taskButton, UndoButton, RedoButton;
 
     @FXML
     Label displayUsername;
@@ -51,6 +53,8 @@ public class HomePageController implements Initializable {
 
     ObservableList<UserTask> TaskList;
 
+    Stack<UserTaskMemento> undoStack = new Stack<>();
+    Stack<UserTaskMemento> redoStack = new Stack<>();
     
 
     Statement statement;
@@ -69,6 +73,9 @@ public class HomePageController implements Initializable {
             e.printStackTrace();
         }
 
+
+        UndoButton.setDisable(true);
+        RedoButton.setDisable(true);
     }
 
     //----------------------------METHODS for display------------------------------------------
@@ -98,7 +105,7 @@ public class HomePageController implements Initializable {
         connect = Database.DBConnect();
         statement = connect.createStatement();
 
-        String task = "SELECT Task FROM usertask WHERE Task = '" + task_Input.getText() + "'";
+        String task = "SELECT Task FROM usertask WHERE Task = '" + task_Input.getText() + "' AND Admin = '" + DataStored.username + "'";;
         
         ResultSet result = statement.executeQuery(task);
         
@@ -107,8 +114,19 @@ public class HomePageController implements Initializable {
         } else {
             String insertTask = "INSERT INTO usertask (Task, Admin) VALUES ('" + task_Input.getText() + "', '" +  DataStored.username + "')";
             statement.executeUpdate(insertTask);
+            
+            //save the current state for possible undo action
+            undoStack.push(new UserTaskMemento(task_Input.getText()));
+           
+            //clear the redo stack, as a new action is performed
+            redoStack.clear();
+
             showTaskList();
-        
+
+            // Enable the "Undo" button when a new task is inserted
+            UndoButton.setDisable(false);
+            // Disable the "Redo" button when a new action is performed
+            RedoButton.setDisable(true);
         }
 
     }
@@ -116,22 +134,76 @@ public class HomePageController implements Initializable {
     public void deletetask(ActionEvent event) throws SQLException {
         UserTask selectedTask = displayTaskTable.getSelectionModel().getSelectedItem();
         
-            if (selectedTask != null) {
-                connect = Database.DBConnect();
-                statement = connect.createStatement();
+        if (selectedTask != null) {
+            connect = Database.DBConnect();
+            statement = connect.createStatement();
             
-                String deleteQuery = "DELETE FROM usertask WHERE Task = '" + selectedTask.getTask() + "'";
+            String deleteQuery = "DELETE FROM usertask WHERE Task = '" + selectedTask.getTask() + "'";
             
-                try {
-                    statement.executeUpdate(deleteQuery);
-                    showTaskList(); 
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                AlertMaker.showSimpleAlert("Ooops!", "Select a task to delete.");
+            try {
+                statement.executeUpdate(deleteQuery);
+                showTaskList(); 
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
+        } else {
+            AlertMaker.showSimpleAlert("Ooops!", "Select a task to delete.");
         }
+    }
+
+    //undo for task
+    
+    public void undo() throws SQLException {
+        if (!undoStack.isEmpty()) {
+            UserTaskMemento memento = undoStack.pop();
+            redoStack.push(memento);
+    
+            //Delete the task from the database
+            connect = Database.DBConnect();
+            statement = connect.createStatement();
+            String deleteQuery = "DELETE FROM usertask WHERE Task = '" + memento.getTask() + "'";
+            statement.executeUpdate(deleteQuery);
+
+            // Remove the task from TaskList.
+            TaskList.removeIf(task -> task.getTask().equals(memento.getTask()));
+
+            // Refresh the table view.
+            displayTaskTable.refresh();
+
+            // Disable the "Undo" button when the undoStack is empty
+            UndoButton.setDisable(undoStack.isEmpty());
+
+            // Enable the "Redo" button when an undo is performed
+            RedoButton.setDisable(false);
+        }
+    }
+
+    //redo for task
+    public void redo()throws SQLException {
+        if (!redoStack.isEmpty()) {
+            UserTaskMemento memento = redoStack.pop();
+            undoStack.push(memento);
+            
+            // Insert the task into the database.
+            connect = Database.DBConnect();
+            statement = connect.createStatement();
+            String insertQuery = "INSERT INTO usertask (Task, Admin) VALUES ('" + memento.getTask() + "', '" + DataStored.username + "')";
+            statement.executeUpdate(insertQuery);
+    
+            // Update the TaskList.
+            TaskList.add(new UserTask(memento.getTask()));
+    
+            // Refresh the table view.
+            displayTaskTable.refresh();
+
+            // Enable the "Undo" button when a redo is performed
+            UndoButton.setDisable(false);
+
+            // Disable the "Redo" button when the redoStack is empty
+            RedoButton.setDisable(redoStack.isEmpty());
+        }
+    }
+
 
     //Retrieval of data from xampp
     public ObservableList<UserTask> dataTaskList() throws SQLException{
@@ -160,7 +232,7 @@ public class HomePageController implements Initializable {
 
     }
 
-    //----------------------------Methods for buttons------------------------------------
+
 
     public void logout(ActionEvent event)throws IOException{
 

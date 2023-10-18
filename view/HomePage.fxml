@@ -20,5 +20,7 @@
         </columns>
       </TableView>
       <Button fx:id="deleteButton" layoutX="541.0" layoutY="128.0" mnemonicParsing="false" onAction="#deletetask" prefHeight="52.0" prefWidth="68.0" text="Delete" />
+      <Button fx:id="UndoButton" layoutX="86.0" layoutY="228.0" mnemonicParsing="false" onAction="#undo" text="undo" />
+      <Button fx:id="RedoButton" layoutX="86.0" layoutY="256.0" mnemonicParsing="false" onAction="#redo" text="redo" />
    </children>
 </AnchorPane>
