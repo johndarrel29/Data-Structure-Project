@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="537.0" prefWidth="879.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="537.0" prefWidth="879.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
    <children>
       <TextArea fx:id="task_Input" layoutX="138.0" layoutY="119.0" prefHeight="85.0" prefWidth="281.0" />
       <Button fx:id="logoutButton" layoutX="779.0" layoutY="28.0" mnemonicParsing="false" onAction="#logout" prefHeight="47.0" prefWidth="75.0" text="Log out" />
@@ -22,5 +22,6 @@
       <Button fx:id="deleteButton" layoutX="541.0" layoutY="128.0" mnemonicParsing="false" onAction="#deletetask" prefHeight="52.0" prefWidth="68.0" text="Delete" />
       <Button fx:id="UndoButton" layoutX="86.0" layoutY="228.0" mnemonicParsing="false" onAction="#undo" text="undo" />
       <Button fx:id="RedoButton" layoutX="86.0" layoutY="256.0" mnemonicParsing="false" onAction="#redo" text="redo" />
+      <Button fx:id="toJournalButton" layoutX="730.0" layoutY="439.0" mnemonicParsing="false" onAction="#toJournal" text="to journal" />
    </children>
 </AnchorPane>
