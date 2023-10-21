@@ -37,7 +37,7 @@ public class HomePageController implements Initializable {
 
 
     @FXML
-    Button logoutButton, taskButton, UndoButton, RedoButton;
+    Button logoutButton, taskButton, UndoButton, RedoButton, toJournalButton;
 
     @FXML
     Label displayUsername;
@@ -232,6 +232,15 @@ public class HomePageController implements Initializable {
 
     }
 
+     public void toJournal(ActionEvent event) throws IOException {
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Journal.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+      }
 
 
     public void logout(ActionEvent event)throws IOException{
@@ -247,9 +256,9 @@ public class HomePageController implements Initializable {
         DataStored.clearUsername();
 
         stage.show();
-
     }
 
+   
 
     
 
