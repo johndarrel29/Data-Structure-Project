@@ -37,7 +37,7 @@ public class HomePageController implements Initializable {
 
 
     @FXML
-    Button logoutButton, taskButton, UndoButton, RedoButton, toJournalButton;
+    Button logoutButton, taskButton, UndoButton, RedoButton;
 
     @FXML
     Label displayUsername;
@@ -116,7 +116,7 @@ public class HomePageController implements Initializable {
             statement.executeUpdate(insertTask);
             
             //save the current state for possible undo action
-            undoStack.push(new UserTaskMemento(task_Input.getText()));
+            undoStack.push(new UserTaskMemento(task_Input.getText(), DataStored.username, true));
            
             //clear the redo stack, as a new action is performed
             redoStack.clear();
@@ -137,11 +137,30 @@ public class HomePageController implements Initializable {
         if (selectedTask != null) {
             connect = Database.DBConnect();
             statement = connect.createStatement();
+
+            // Create a backup of the deleted task for undo
+            UserTaskMemento memento = new UserTaskMemento(selectedTask.getTask(), DataStored.username, false);
             
             String deleteQuery = "DELETE FROM usertask WHERE Task = '" + selectedTask.getTask() + "'";
             
             try {
                 statement.executeUpdate(deleteQuery);
+
+                //kapag nag redo tsaka lng bumabalik yung task after it was deleted because the undo button was supposed to delete only.
+                //We need to make the undo button add the deleted task again
+                //wag kalimutan tooo!!!!!
+                
+                // Push the memento onto the undo stack
+                undoStack.push(memento);
+                // Clear the redo stack, as a new action is performed
+                redoStack.clear();
+
+                 // Disable the "Undo" button when the undoStack is empty
+                UndoButton.setDisable(undoStack.isEmpty());
+
+                // Enable the "Redo" button when a delete is performed
+                RedoButton.setDisable(true);
+
                 showTaskList(); 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -152,57 +171,77 @@ public class HomePageController implements Initializable {
     }
 
     //undo for task
-    
+    //KAPAG NAG UNDO AND REDO NANG PAULIT ULIT..DI NA GUMAGANA
     public void undo() throws SQLException {
         if (!undoStack.isEmpty()) {
             UserTaskMemento memento = undoStack.pop();
-            redoStack.push(memento);
+            if (DataStored.username.equals(memento.getUserAccount())) {
+                redoStack.push(memento);
     
-            //Delete the task from the database
-            connect = Database.DBConnect();
-            statement = connect.createStatement();
-            String deleteQuery = "DELETE FROM usertask WHERE Task = '" + memento.getTask() + "'";
-            statement.executeUpdate(deleteQuery);
-
-            // Remove the task from TaskList.
-            TaskList.removeIf(task -> task.getTask().equals(memento.getTask()));
-
-            // Refresh the table view.
-            displayTaskTable.refresh();
-
-            // Disable the "Undo" button when the undoStack is empty
-            UndoButton.setDisable(undoStack.isEmpty());
-
-            // Enable the "Redo" button when an undo is performed
-            RedoButton.setDisable(false);
+                if (memento.isInsert()) {
+                    // If it was originally an insert, delete the task from the database
+                    connect = Database.DBConnect();
+                    statement = connect.createStatement();
+                    String deleteQuery = "DELETE FROM usertask WHERE Task = '" + memento.getTask() + "' AND Admin = '" + DataStored.username + "'";
+                    statement.executeUpdate(deleteQuery);
+    
+                    // Remove the task from TaskList
+                    TaskList.removeIf(task -> task.getTask().equals(memento.getTask()));
+                } else {
+                    // If it was originally a delete, insert the task back into the database
+                    connect = Database.DBConnect();
+                    statement = connect.createStatement();
+                    String insertQuery = "INSERT INTO usertask (Task, Admin) VALUES ('" + memento.getTask() + "', '" + DataStored.username + "')";
+                    statement.executeUpdate(insertQuery);
+    
+                    // Check if the task is not already in the list before adding it
+                    if (TaskList.stream().noneMatch(task -> task.getTask().equals(memento.getTask()))) {
+                        TaskList.add(new UserTask(memento.getTask()));
+                    }
+                }
+    
+                displayTaskTable.refresh();
+                UndoButton.setDisable(undoStack.isEmpty());
+                RedoButton.setDisable(false);
+            }
         }
     }
+    
+    
 
     //redo for task
-    public void redo()throws SQLException {
+    public void redo() throws SQLException {
         if (!redoStack.isEmpty()) {
             UserTaskMemento memento = redoStack.pop();
-            undoStack.push(memento);
-            
-            // Insert the task into the database.
-            connect = Database.DBConnect();
-            statement = connect.createStatement();
-            String insertQuery = "INSERT INTO usertask (Task, Admin) VALUES ('" + memento.getTask() + "', '" + DataStored.username + "')";
-            statement.executeUpdate(insertQuery);
+            if (DataStored.username.equals(memento.getUserAccount())) {
+                undoStack.push(memento);
+                connect = Database.DBConnect();
+                statement = connect.createStatement();
     
-            // Update the TaskList.
-            TaskList.add(new UserTask(memento.getTask()));
+                if (memento.isInsert()) {
+                    // If it was originally an insert, insert the task back into the database
+                    String insertQuery = "INSERT INTO usertask (Task, Admin) VALUES ('" + memento.getTask() + "', '" + DataStored.username + "')";
+                    statement.executeUpdate(insertQuery);
     
-            // Refresh the table view.
-            displayTaskTable.refresh();
-
-            // Enable the "Undo" button when a redo is performed
-            UndoButton.setDisable(false);
-
-            // Disable the "Redo" button when the redoStack is empty
-            RedoButton.setDisable(redoStack.isEmpty());
+                    // Update the TaskList with the newly added task
+                    TaskList.add(new UserTask(memento.getTask()));
+                } else {
+                    // If it was originally a delete, delete the task from the database
+                    String deleteQuery = "DELETE FROM usertask WHERE Task = '" + memento.getTask() + "' AND Admin = '" + DataStored.username + "'";
+                    statement.executeUpdate(deleteQuery);
+    
+                    // Remove the task from TaskList
+                    TaskList.removeIf(task -> task.getTask().equals(memento.getTask()));
+                }
+    
+                displayTaskTable.refresh();
+                UndoButton.setDisable(undoStack.isEmpty());
+                RedoButton.setDisable(undoStack.isEmpty());
+            }
         }
     }
+    
+    
 
 
     //Retrieval of data from xampp
@@ -232,7 +271,8 @@ public class HomePageController implements Initializable {
 
     }
 
-     public void toJournal(ActionEvent event) throws IOException {
+
+    public void toJournal(ActionEvent event) throws IOException {
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Journal.fxml"));
@@ -240,7 +280,7 @@ public class HomePageController implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
-      }
+    }
 
 
     public void logout(ActionEvent event)throws IOException{
@@ -256,9 +296,9 @@ public class HomePageController implements Initializable {
         DataStored.clearUsername();
 
         stage.show();
+
     }
 
-   
 
     
 

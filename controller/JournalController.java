@@ -17,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 // import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -40,7 +41,7 @@ public class JournalController implements Initializable {
 
 
     @FXML
-    Button journalButton, delJournalButton, UndoButton1, RedoButton1;
+    Button journalButton, delJournalButton, UndoButton1, RedoButton1, toTask;
 
     @FXML
     Label displayUsername1;
@@ -261,6 +262,16 @@ public class JournalController implements Initializable {
         }
         
         return dataList;
+    }
+
+    public void ToTask(ActionEvent event) throws IOException {
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/HomePage.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
     
     

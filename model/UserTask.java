@@ -2,6 +2,7 @@ package model;
 
 public class UserTask {
     String task;
+    String admin;
 
     public UserTask (String task){
         this.task = task;
@@ -15,8 +16,8 @@ public class UserTask {
         this.task = task;
     }
 
-    public UserTaskMemento saveToMemento() {
-        return new UserTaskMemento(task);
+    public UserTaskMemento saveToMemento(boolean isInsert) {
+        return new UserTaskMemento(task, admin, isInsert);
     }
 
     public void restoreFromMemento(UserTaskMemento memento) {
