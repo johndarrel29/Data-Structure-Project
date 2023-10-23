@@ -235,8 +235,8 @@ public class HomePageController implements Initializable {
                 }
     
                 displayTaskTable.refresh();
-                UndoButton.setDisable(undoStack.isEmpty());
-                RedoButton.setDisable(undoStack.isEmpty());
+                UndoButton.setDisable(false);
+                RedoButton.setDisable(redoStack.isEmpty());
             }
         }
     }
