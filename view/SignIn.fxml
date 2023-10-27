@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -22,20 +21,19 @@
             </ImageView>
             <Pane layoutX="140.0" layoutY="250.0" prefHeight="379.0" prefWidth="411.0">
                <children>
-                  <PasswordField fx:id="loginPassword" layoutX="42.0" layoutY="192.0" prefHeight="42.0" prefWidth="327.0" promptText="Enter password" />
-                  <Label layoutX="42.0" layoutY="145.0" prefHeight="68.0" prefWidth="139.0" text="Password:">
+                  <PasswordField fx:id="loginPassword" layoutX="80.0" layoutY="169.0" prefHeight="42.0" prefWidth="253.0" promptText="Enter password" style="-fx-font-family: Arial Rounded MT Bold; -fx-background-color: white; -fx-background-radius: 10;" styleClass="loginPassword" stylesheets="@../CSS/Styles.css" />
+                  <TextField fx:id="loginUsername" layoutX="80.0" layoutY="103.0" prefHeight="42.0" prefWidth="253.0" promptText="Enter username" style="-fx-font-family: Arial Rounded MT Bold; -fx-background-color: white; -fx-background-radius: 10px;" styleClass="loginUsername" stylesheets="@../CSS/Styles.css">
                      <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="loginUsername" layoutX="42.0" layoutY="103.0" prefHeight="42.0" prefWidth="327.0" promptText="Enter username" />
-                  <Label layoutX="42.0" layoutY="56.0" prefHeight="68.0" prefWidth="139.0" text="Username:">
+                        <Font name="Arial Rounded MT Bold" size="13.0" />
+                     </font></TextField>
+                  <Button fx:id="loginButton" layoutX="131.0" layoutY="248.0" mnemonicParsing="false" onAction="#CheckLogin" prefHeight="42.0" prefWidth="73.0" style="-fx-font-family: Arial Rounded MT Bold;" styleClass="loginButton" stylesheets="@../CSS/Styles.css" text="Log In">
                      <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-                  <Button fx:id="loginButton" layoutX="169.0" layoutY="249.0" mnemonicParsing="false" onAction="#CheckLogin" prefHeight="42.0" prefWidth="73.0" text="Log In" />
-                  <Hyperlink fx:id="goToSignup" layoutX="136.0" layoutY="310.0" onAction="#switchPane" prefHeight="35.0" prefWidth="139.0" text="Don't have an account?" />
+                        <Font name="Arial Rounded MT Bold" size="19.0" />
+                     </font></Button>
+                  <Hyperlink fx:id="goToSignup" layoutX="147.0" layoutY="305.0" onAction="#switchPane" prefHeight="22.0" prefWidth="118.0" text="Don't have an account?" textAlignment="CENTER">
+                     <font>
+                        <Font size="11.0" />
+                     </font></Hyperlink>
                </children>
             </Pane>
          </children>
@@ -49,20 +47,16 @@
             </ImageView>
             <Pane layoutX="140.0" layoutY="251.0" prefHeight="379.0" prefWidth="411.0">
                <children>
-                  <PasswordField fx:id="InsertPassword" layoutX="42.0" layoutY="190.0" prefHeight="42.0" prefWidth="327.0" promptText="Enter password" />
-                  <Label layoutX="26.0" layoutY="143.0" prefHeight="68.0" prefWidth="139.0" text="Password:">
+                  <PasswordField fx:id="InsertPassword" layoutX="80.0" layoutY="169.0" prefHeight="42.0" prefWidth="253.0" promptText="Enter password" style="-fx-font-family: Arial Rounded MT Bold; -fx-background-color: white; -fx-background-radius: 10;" styleClass="InsertPassword" stylesheets="@../CSS/Styles.css" />
+                  <TextField fx:id="InsertUsername" layoutX="80.0" layoutY="103.0" prefHeight="42.0" prefWidth="253.0" promptText="Enter username" style="-fx-font-family: Arial Rounded MT Bold; -fx-background-color: white; -fx-background-radius: 10;" styleClass="InsertUsername" stylesheets="@../CSS/Styles.css">
                      <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="InsertUsername" layoutX="42.0" layoutY="106.0" prefHeight="42.0" prefWidth="327.0" promptText="Enter username" />
-                  <Label layoutX="33.0" layoutY="59.0" prefHeight="68.0" prefWidth="139.0" text="Username:">
+                        <Font name="Arial Rounded MT Bold" size="13.0" />
+                     </font></TextField>
+                  <Button fx:id="createAccountButton" layoutX="131.0" layoutY="248.0" mnemonicParsing="false" onAction="#signup" prefHeight="40.0" prefWidth="150.0" style="-fx-font-family: Arial Rounded MT Bold;" styleClass="createAccountButton" stylesheets="@../CSS/Styles.css" text="Create Account" />
+                  <Hyperlink fx:id="goToLogin" layoutX="147.0" layoutY="305.0" onAction="#switchPane" prefHeight="22.0" prefWidth="150.0" text="Already have an account?">
                      <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-                  <Button fx:id="createAccountButton" layoutX="139.0" layoutY="237.0" mnemonicParsing="false" onAction="#signup" prefHeight="42.0" prefWidth="124.0" text="Create Account" />
-                  <Hyperlink fx:id="goToLogin" layoutX="132.0" layoutY="299.0" onAction="#switchPane" prefHeight="35.0" prefWidth="192.0" text="Already have an account?" />
+                        <Font size="11.0" />
+                     </font></Hyperlink>
                </children>
             </Pane>
          </children>
