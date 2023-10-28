@@ -115,18 +115,18 @@ public class HomePageController implements Initializable {
 
         
     public void showTaskList(TableColumn<UserTask, String> tableColumn) throws SQLException {
-    TaskList = dataTaskList();
+        TaskList = dataTaskList();
 
-    userTaskList.setCellValueFactory(new PropertyValueFactory<>("task"));
+        userTaskList.setCellValueFactory(new PropertyValueFactory<>("task"));
 
-    TableColumn<UserTask, Boolean> completedColumn = new TableColumn<>("Completed");
-    completedColumn.setCellValueFactory(new PropertyValueFactory<>("completed"));
-    completedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(completedColumn));
+        TableColumn<UserTask, Boolean> completedColumn = new TableColumn<>("Completed");
+        completedColumn.setCellValueFactory(new PropertyValueFactory<>("completed"));
+        completedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(completedColumn));
 
-    TableColumn<UserTask, UserTask> retrieveColumn = new TableColumn<>("Confirm");
-    retrieveColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-    retrieveColumn.setCellFactory(cell -> new TableCell<UserTask, UserTask>() {
-        final Button retrieveButton = new Button("Confirm");
+        TableColumn<UserTask, UserTask> retrieveColumn = new TableColumn<>("Confirm");
+        retrieveColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+        retrieveColumn.setCellFactory(cell -> new TableCell<UserTask, UserTask>() {
+            final Button retrieveButton = new Button("Confirm");
 
         {
             retrieveButton.setOnAction(event -> {
@@ -188,15 +188,16 @@ public class HomePageController implements Initializable {
        // progress bar --------------------------------------------------------------------------------
 
     private void updateProgress() {
-        int totalTasks = TaskList.size();  // Total number of tasks
-        int completedTasks = doneTaskTable.getItems().size();  // Number of completed tasks
-    
-        // Ensure you are not dividing by zero (if totalTasks is zero, set progress to 0)
-        double progress = (totalTasks == 0) ? 0 : (double) completedTasks / totalTasks;
-    
-        progressBar.setProgress(progress);
-        progressIndicator.setProgress(progress);
-    }
+    int totalTasks = TaskList.size();  // Total number of tasks
+    int completedTasks = doneTaskTable.getItems().size();  // Number of completed tasks
+
+    double progress = (totalTasks == 0) ? 0 : (double) completedTasks / totalTasks;
+
+    progressBar.setProgress(progress);
+    progressIndicator.setProgress(progress);
+}
+
+
 //----------------------------------------------------------------------------------
     private void deleteTaskFromDatabase(String task) {
         try {
@@ -287,6 +288,8 @@ public class HomePageController implements Initializable {
         
         if (result.next()) {
             AlertMaker.showSimpleAlert("Notifications", "Task is already existing");
+        } if (task_Input.getText().isEmpty()) {
+            AlertMaker.showSimpleAlert("Notification", "Input cannot be blanked");
         } else {
             String insertTask = "INSERT INTO usertask (Task, Admin) VALUES ('" + task_Input.getText() + "', '" +  DataStored.username + "')";
             statement.executeUpdate(insertTask);
