@@ -2,31 +2,35 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="537.0" prefWidth="879.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="537.0" prefWidth="879.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
    <children>
-      <TextArea fx:id="task_Input" layoutX="138.0" layoutY="119.0" prefHeight="85.0" prefWidth="281.0" />
+      <TextArea fx:id="task_Input" layoutX="136.0" layoutY="60.0" prefHeight="85.0" prefWidth="281.0" />
       <Button fx:id="logoutButton" layoutX="779.0" layoutY="28.0" mnemonicParsing="false" onAction="#logout" prefHeight="47.0" prefWidth="75.0" text="Log out" />
       <Label layoutX="617.0" layoutY="34.0" prefHeight="35.0" prefWidth="75.0" text="Welcome: " />
       <Label fx:id="displayUsername" layoutX="686.0" layoutY="28.0" prefHeight="47.0" prefWidth="69.0" text="User" />
-      <Button fx:id="taskButton" layoutX="454.0" layoutY="130.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="47.0" prefWidth="75.0" text="Submit" />
-      <TableView fx:id="displayTaskTable" editable="true" layoutX="135.0" layoutY="228.0" prefHeight="200.0" prefWidth="322.0">
+      <Button fx:id="taskButton" layoutX="444.0" layoutY="94.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="47.0" prefWidth="75.0" text="Submit" />
+      <TableView fx:id="displayTaskTable" editable="true" layoutX="138.0" layoutY="194.0" prefHeight="200.0" prefWidth="322.0">
         <columns>
           <TableColumn fx:id="userTaskList" prefWidth="242.0" text="User Task" />
         </columns>
       </TableView>
-      <Button fx:id="deleteButton" layoutX="541.0" layoutY="128.0" mnemonicParsing="false" onAction="#deletetask" prefHeight="52.0" prefWidth="68.0" text="Delete" />
-      <Button fx:id="UndoButton" layoutX="86.0" layoutY="228.0" mnemonicParsing="false" onAction="#undo" text="undo" />
-      <Button fx:id="RedoButton" layoutX="86.0" layoutY="256.0" mnemonicParsing="false" onAction="#redo" text="redo" />
-      <Button fx:id="toJournalButton" layoutX="730.0" layoutY="439.0" mnemonicParsing="false" onAction="#toJournal" text="to journal" />
-      <TableView fx:id="doneTaskTable" layoutX="492.0" layoutY="214.0" prefHeight="200.0" prefWidth="200.0">
+      <Button fx:id="deleteButton" layoutX="534.0" layoutY="92.0" mnemonicParsing="false" onAction="#deletetask" prefHeight="52.0" prefWidth="68.0" text="Delete" />
+      <Button fx:id="UndoButton" layoutX="79.0" layoutY="197.0" mnemonicParsing="false" onAction="#undo" text="undo" />
+      <Button fx:id="RedoButton" layoutX="78.0" layoutY="232.0" mnemonicParsing="false" onAction="#redo" text="redo" />
+      <Button fx:id="toJournalButton" layoutX="781.0" layoutY="88.0" mnemonicParsing="false" onAction="#toJournal" text="to journal" />
+      <TableView fx:id="doneTaskTable" layoutX="494.0" layoutY="186.0" prefHeight="200.0" prefWidth="200.0">
         <columns>
           <TableColumn fx:id="doneList" prefWidth="120.800048828125" text="C1" />
         </columns>
       </TableView>
+      <ProgressBar fx:id="progressBar" layoutX="236.0" layoutY="457.0" prefHeight="30.0" prefWidth="408.0" progress="0.0" />
+      <ProgressIndicator fx:id="progressIndicator" layoutX="425.0" layoutY="411.0" progress="0.0" />
    </children>
 </AnchorPane>
