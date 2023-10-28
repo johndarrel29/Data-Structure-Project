@@ -11,7 +11,9 @@ import java.util.Stack;
 // import java.util.stream.Collectors;
 
 import alert.AlertMaker;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,6 +25,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -57,6 +61,12 @@ public class HomePageController implements Initializable {
     TableColumn<UserTask, String> userTaskList;
     TableColumn<UserTask, String> doneList;
 
+    @FXML
+    ProgressBar progressBar;
+
+   @FXML
+    ProgressIndicator progressIndicator;
+
     ObservableList<UserTask> TaskList;
 
     Stack<UserTaskMemento> undoStack = new Stack<>();
@@ -71,6 +81,7 @@ public class HomePageController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         displayUser();
+        
     
         doneList = new TableColumn<>("Completed Tasks"); // Initialize doneList
         try {
@@ -81,13 +92,15 @@ public class HomePageController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    
+        
+        
         UndoButton.setDisable(true);
         RedoButton.setDisable(true);
         setupDoneTaskTable();
+        updateProgress();
     }
     
-
+   
     //----------------------------METHODS for display------------------------------------------
     
         private void setupDoneTaskTable() {
@@ -146,29 +159,45 @@ public class HomePageController implements Initializable {
     private void moveTaskToDone(UserTask userTask) {
         if (userTask != null) {
             // Remove the task from the 'TaskList' (displayTaskTable)
-            TaskList.remove(userTask);
+        TaskList.remove(userTask);
 
             // Insert the task into the 'completed_tasks' table
-            try {
-                connect = Database.DBConnect();
-                statement = connect.createStatement();
-                String insertQuery = "INSERT INTO completed_tasks (Task, Admin) VALUES ('" + userTask.getTask() + "', '" + DataStored.username + "')";
-                statement.executeUpdate(insertQuery);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        try {
+            connect = Database.DBConnect();
+            statement = connect.createStatement();
+            String insertQuery = "INSERT INTO completed_tasks (Task, Admin) VALUES ('" + userTask.getTask() + "', '" + DataStored.username + "')";
+            statement.executeUpdate(insertQuery);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
             // Remove the task from the 'usertask' table
-            deleteTaskFromDatabase(userTask.getTask());
+        deleteTaskFromDatabase(userTask.getTask());
 
             // Add the task to the 'doneTaskTable'
-            doneTaskTable.getItems().add(userTask);
+        doneTaskTable.getItems().add(userTask);
 
             // Refresh the displayTaskTable
-            displayTaskTable.setItems(TaskList);
+        displayTaskTable.setItems(TaskList);
+
+        updateProgress();
+          
         }
     }
 
+       // progress bar --------------------------------------------------------------------------------
+
+    private void updateProgress() {
+        int totalTasks = TaskList.size();  // Total number of tasks
+        int completedTasks = doneTaskTable.getItems().size();  // Number of completed tasks
+    
+        // Ensure you are not dividing by zero (if totalTasks is zero, set progress to 0)
+        double progress = (totalTasks == 0) ? 0 : (double) completedTasks / totalTasks;
+    
+        progressBar.setProgress(progress);
+        progressIndicator.setProgress(progress);
+    }
+//----------------------------------------------------------------------------------
     private void deleteTaskFromDatabase(String task) {
         try {
             connect = Database.DBConnect();
@@ -178,6 +207,10 @@ public class HomePageController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        displayTaskTable.setItems(TaskList);
+
+         updateProgress();
+     
     }
 
 
@@ -237,7 +270,6 @@ public class HomePageController implements Initializable {
 
 
     
-   
 
 
     //---------------------------------------------------------------------------------------
@@ -445,7 +477,6 @@ public class HomePageController implements Initializable {
     }
 
 
-    
 
 
 }
