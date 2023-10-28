@@ -1,17 +1,17 @@
 package controller;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
-import java.util.Stack;
-
-import alert.AlertMaker;
-
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ResourceBundle;
+import java.util.Stack;
+// import java.util.stream.Collectors;
 
+import alert.AlertMaker;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,9 +23,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.DataStored;
@@ -37,7 +39,7 @@ public class HomePageController implements Initializable {
 
 
     @FXML
-    Button logoutButton, taskButton, UndoButton, RedoButton;
+    Button logoutButton, taskButton, UndoButton, RedoButton, deleteButton;
 
     @FXML
     Label displayUsername;
@@ -49,7 +51,11 @@ public class HomePageController implements Initializable {
     TableView<UserTask> displayTaskTable;
 
     @FXML
+    TableView<UserTask> doneTaskTable;
+
+    @FXML
     TableColumn<UserTask, String> userTaskList;
+    TableColumn<UserTask, String> doneList;
 
     ObservableList<UserTask> TaskList;
 
@@ -64,40 +70,178 @@ public class HomePageController implements Initializable {
     //ready for designing
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         displayUser();
-        
+    
+        doneList = new TableColumn<>("Completed Tasks"); // Initialize doneList
         try {
-            showTaskList();
+            showTaskList(userTaskList);
+            doneList.setCellValueFactory(new PropertyValueFactory<>("task"));
+            doneTaskTable.getColumns().setAll(doneList);
+            doneTaskTable.setItems(retrieveCompletedTasks());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        UndoButton.setDisable(true);
+        RedoButton.setDisable(true);
+        setupDoneTaskTable();
+    }
+    
+
+    //----------------------------METHODS for display------------------------------------------
+    
+        private void setupDoneTaskTable() {
+    }
+
+    public void displayUser(){
+        //display user
+        String user = DataStored.username;
+            displayUsername.setText(user.substring(0, 1).toUpperCase() + user.substring(1));
+            
+        }
+
+        
+    public void showTaskList(TableColumn<UserTask, String> tableColumn) throws SQLException {
+    TaskList = dataTaskList();
+
+    userTaskList.setCellValueFactory(new PropertyValueFactory<>("task"));
+
+    TableColumn<UserTask, Boolean> completedColumn = new TableColumn<>("Completed");
+    completedColumn.setCellValueFactory(new PropertyValueFactory<>("completed"));
+    completedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(completedColumn));
+
+    TableColumn<UserTask, UserTask> retrieveColumn = new TableColumn<>("Confirm");
+    retrieveColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+    retrieveColumn.setCellFactory(cell -> new TableCell<UserTask, UserTask>() {
+        final Button retrieveButton = new Button("Confirm");
+
+        {
+            retrieveButton.setOnAction(event -> {
+                UserTask userTask = getTableRow().getItem();
+                if (userTask != null && userTask.isCompleted()) {
+                    String task = userTask.getTask();
+                    System.out.println("Retrieving data for task: " + task);
+                    moveTaskToDone(userTask); // Call a new method to handle moving the task
+                } else {
+                    System.out.println("Cannot retrieve data because the checkbox is not selected.");
+                }
+            });
+        }
+
+        @Override
+        protected void updateItem(UserTask userTask, boolean empty) {
+            super.updateItem(userTask, empty);
+            if (userTask == null || empty) {
+                setGraphic(null);
+            } else {
+                setGraphic(retrieveButton);
+            }
+        }
+    });
+
+    displayTaskTable.getColumns().setAll(tableColumn, completedColumn, retrieveColumn);
+    displayTaskTable.setItems(TaskList);
+}
+
+    private void moveTaskToDone(UserTask userTask) {
+        if (userTask != null) {
+            // Remove the task from the 'TaskList' (displayTaskTable)
+            TaskList.remove(userTask);
+
+            // Insert the task into the 'completed_tasks' table
+            try {
+                connect = Database.DBConnect();
+                statement = connect.createStatement();
+                String insertQuery = "INSERT INTO completed_tasks (Task, Admin) VALUES ('" + userTask.getTask() + "', '" + DataStored.username + "')";
+                statement.executeUpdate(insertQuery);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // Remove the task from the 'usertask' table
+            deleteTaskFromDatabase(userTask.getTask());
+
+            // Add the task to the 'doneTaskTable'
+            doneTaskTable.getItems().add(userTask);
+
+            // Refresh the displayTaskTable
+            displayTaskTable.setItems(TaskList);
+        }
+    }
+
+    private void deleteTaskFromDatabase(String task) {
+        try {
+            connect = Database.DBConnect();
+            statement = connect.createStatement();
+            String deleteQuery = "DELETE FROM usertask WHERE Task = '" + task + "' AND Admin = '" + DataStored.username + "'";
+            statement.executeUpdate(deleteQuery);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void showCompletedTasks(TableColumn<UserTask, String> tableColumn) throws SQLException {
+        // Load completed tasks from the "completed_tasks" table
+        ObservableList<UserTask> completedTaskList = dataCompletedTaskList();
+
+        tableColumn.setCellValueFactory(new PropertyValueFactory<>("task"));
+        doneTaskTable.getColumns().setAll(tableColumn);
+        doneTaskTable.setItems(completedTaskList);
+    }
+
+    public ObservableList<UserTask> dataCompletedTaskList() throws SQLException {
+        ObservableList<UserTask> completedTaskList = FXCollections.observableArrayList();
+
+        String retrieveData = "SELECT * FROM completed_tasks WHERE Admin = '" + DataStored.username + "'";
+        connect = Database.DBConnect();
+        statement = connect.createStatement();
+
+        try {
+            ResultSet result = statement.executeQuery(retrieveData);
+
+            UserTask UT;
+
+            while (result.next()) {
+                UT = new UserTask(result.getString("Task"));
+
+                completedTaskList.add(UT);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-
-        UndoButton.setDisable(true);
-        RedoButton.setDisable(true);
+        return completedTaskList;
     }
 
-    //----------------------------METHODS for display------------------------------------------
+    public ObservableList<UserTask> retrieveCompletedTasks() {
+        ObservableList<UserTask> completedTasks = FXCollections.observableArrayList();
+
+        try {
+            connect = Database.DBConnect();
+            statement = connect.createStatement();
+
+            String selectQuery = "SELECT Task FROM completed_tasks WHERE Admin = '" + DataStored.username + "'";
+            ResultSet resultSet = statement.executeQuery(selectQuery);
+
+            while (resultSet.next()) {
+                String task = resultSet.getString("Task");
+                completedTasks.add(new UserTask(task));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return completedTasks;
+    }
+
+
     
-    public void displayUser(){
-        //display user
-        String user = DataStored.username;
-        displayUsername.setText(user.substring(0, 1).toUpperCase() + user.substring(1));
-        
-    }
-
-    
-    public void showTaskList() throws SQLException{
-        TaskList = dataTaskList();
-
-        userTaskList.setCellValueFactory(new PropertyValueFactory<UserTask, String>("Task"));
-        displayTaskTable.setItems(TaskList);
-    }
+   
 
 
     //---------------------------------------------------------------------------------------
-
+    
 
     //gumana na..pwede na ulit mag input si user paulit ulit
     public void insertTask()throws SQLException{
@@ -121,19 +265,19 @@ public class HomePageController implements Initializable {
             //clear the redo stack, as a new action is performed
             redoStack.clear();
 
-            showTaskList();
+            showTaskList(userTaskList);
 
             // Enable the "Undo" button when a new task is inserted
             UndoButton.setDisable(false);
             // Disable the "Redo" button when a new action is performed
             RedoButton.setDisable(true);
+            deleteButton.setDisable(false);
         }
 
     }
 
     public void deletetask(ActionEvent event) throws SQLException {
         UserTask selectedTask = displayTaskTable.getSelectionModel().getSelectedItem();
-        
         if (selectedTask != null) {
             connect = Database.DBConnect();
             statement = connect.createStatement();
@@ -161,7 +305,7 @@ public class HomePageController implements Initializable {
                 // Enable the "Redo" button when a delete is performed
                 RedoButton.setDisable(true);
 
-                showTaskList(); 
+                showTaskList(userTaskList); 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -203,6 +347,7 @@ public class HomePageController implements Initializable {
                 displayTaskTable.refresh();
                 UndoButton.setDisable(undoStack.isEmpty());
                 RedoButton.setDisable(false);
+             
             }
         }
     }
