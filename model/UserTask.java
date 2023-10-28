@@ -1,14 +1,27 @@
 package model;
 
-public class UserTask {
-    String task;
-    String admin;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.Button;
+import javafx.beans.property.BooleanProperty;
 
-    public UserTask (String task){
+public class UserTask {
+    private String task;
+    private String admin;
+    private BooleanProperty completed; // Boolean property for the checkbox
+    private Button retrieveButton;
+
+    public UserTask(String task) {
         this.task = task;
+        this.completed = new SimpleBooleanProperty(false); // Default to unchecked
+        this.retrieveButton = new Button("Retrieve");
+
+         // Set an action for the "Retrieve" button
+         this.retrieveButton.setOnAction(event -> {
+            retrieveData();
+        });
     }
 
-    public String getTask (){
+    public String getTask() {
         return task;
     }
 
@@ -16,12 +29,41 @@ public class UserTask {
         this.task = task;
     }
 
+    public BooleanProperty completedProperty() {
+        return completed;
+    }
+
+    public boolean isCompleted() {
+        return completed.get();
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed.set(completed);
+    }
+
     public UserTaskMemento saveToMemento(boolean isInsert) {
-        return new UserTaskMemento(task, admin, isInsert);
+        return new UserTaskMemento(task, admin, isInsert, isCompleted());
     }
 
     public void restoreFromMemento(UserTaskMemento memento) {
         task = memento.getTask();
+        setCompleted(memento.isCompleted());
     }
+
+    public Object selectedProperty() {
+        return null;
+    }
+
+   // Other getters and setters
+
+   public Button getRetrieveButton() {
+    return retrieveButton;
+}
+
+public void retrieveData() {
+    // Implement your data retrieval logic here
+    // You can use the 'task' variable to identify the task for which you want to retrieve data
+    // This method will be called when the "Retrieve" button is clicked
+}
 
 }
