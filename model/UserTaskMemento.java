@@ -11,6 +11,9 @@ public class UserTaskMemento {
         this.isInsert = isInsert;
     }
 
+    public UserTaskMemento(String task2, String admin, boolean isInsert2, boolean completed) {
+    }
+
     public String getTask() {
         return task;
     }
@@ -22,5 +25,8 @@ public class UserTaskMemento {
     public boolean isInsert() {
         return isInsert;
     }
-}
 
+    public boolean isCompleted() {
+        return false;
+    }
+}
