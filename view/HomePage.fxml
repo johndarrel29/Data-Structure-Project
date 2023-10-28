@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="537.0" prefWidth="879.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
    <children>
@@ -32,5 +33,10 @@
       </TableView>
       <ProgressBar fx:id="progressBar" layoutX="236.0" layoutY="457.0" prefHeight="30.0" prefWidth="408.0" progress="0.0" />
       <ProgressIndicator fx:id="progressIndicator" layoutX="425.0" layoutY="411.0" progress="0.0" />
+      <Label fx:id="dateLabel" layoutX="19.0" layoutY="406.0" prefHeight="73.0" prefWidth="200.0" text="date" textFill="#5aa7d3">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="32.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
