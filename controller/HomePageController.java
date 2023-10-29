@@ -173,7 +173,7 @@ private void setRandomQuote() {
 
     //----------------------------METHODS for display------------------------------------------
     
-        private void setupDoneTaskTable() {
+    private void setupDoneTaskTable() {
     }
 
     public void displayUser(){

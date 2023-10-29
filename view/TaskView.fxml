@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
    <children>
-      <Label layoutX="217.0" layoutY="128.0" text="TASK" />
+      <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/TaskView.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="journalButton" layoutX="896.0" layoutY="69.0" mnemonicParsing="false" onAction="#toJournal" opacity="0.0" prefHeight="43.0" prefWidth="109.0" text="Journal" />
+      <Button fx:id="homeButton" layoutX="1062.0" layoutY="63.0" mnemonicParsing="false" onAction="#toHomePage" prefHeight="56.0" prefWidth="109.0" text="Home" />
+      <ComboBox fx:id="DaysChoices" layoutX="1027.0" layoutY="243.0" prefHeight="34.0" prefWidth="163.0" promptText="Choose Days" />
+      <Button fx:id="InserttaskButton" layoutX="1068.0" layoutY="291.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="34.0" prefWidth="81.0" text="Button" />
+      <TextArea fx:id="taskInput" layoutX="1017.0" layoutY="191.0" prefHeight="43.0" prefWidth="200.0" promptText="input task" />
+      <TableView fx:id="displayTaskTable" layoutX="56.0" layoutY="325.0" prefHeight="200.0" prefWidth="120.0">
+        <columns>
+          <TableColumn fx:id="Monday" prefWidth="118.0" text="Task" />
+        </columns>
+      </TableView>
    </children>
 </AnchorPane>
