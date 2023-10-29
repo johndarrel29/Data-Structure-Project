@@ -9,6 +9,12 @@ import java.sql.Statement;
 import java.util.ResourceBundle;
 import java.util.Stack;
 // import java.util.stream.Collectors;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import alert.AlertMaker;
 import javafx.beans.property.DoubleProperty;
@@ -77,6 +83,8 @@ public class HomePageController implements Initializable {
     @FXML
     private Label dateLabel;
 
+    @FXML
+    private Label quoteLabel;
 
     ObservableList<UserTask> TaskList;
 
@@ -110,9 +118,10 @@ public class HomePageController implements Initializable {
         setupDoneTaskTable();
         updateProgress();
         updateDateLabel();
+        setRandomQuote();
     }
     
-   // date -----------------------------
+   // date --------------------------------------------------------------------
 
    private void updateDateLabel() {
   
@@ -121,7 +130,47 @@ public class HomePageController implements Initializable {
     String formattedDate = dateFormat.format(new Date());
   
     dateLabel.setText("Today is" + "\n" + formattedDate);
+    
 }
+
+//--- QUOTE OF THE DAY-------------------------------------------------------------
+
+private void setRandomQuote() {
+    try {
+        URL url = new URL("https://zenquotes.io/api/today"); 
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode == 200) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonArray = objectMapper.readTree(response.toString());
+
+            if (jsonArray.isArray() && jsonArray.size() > 0) {
+                String quote = jsonArray.get(0).get("q").asText();
+                quoteLabel.setText(quote);
+            } else {
+                quoteLabel.setText("Failed to fetch a quote.");
+            }
+        } else {
+            quoteLabel.setText("Failed to fetch a quote. HTTP response code: " + responseCode);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+        quoteLabel.setText("Failed to fetch a quote: " + e.getMessage());
+    }
+}
+
+
+
     //----------------------------METHODS for display------------------------------------------
     
         private void setupDoneTaskTable() {
