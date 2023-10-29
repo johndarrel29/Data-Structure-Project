@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
+   <children>
+      <Pane prefHeight="720.0" prefWidth="1280.0">
+         <children>
+            <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/Homepage.png" />
+               </image>
+            </ImageView>
+            <ProgressBar fx:id="progressBar" layoutX="153.0" layoutY="441.0" prefHeight="35.0" prefWidth="467.0" progress="0.0" />
+            <ProgressIndicator fx:id="progressIndicator" layoutX="373.0" layoutY="482.0" prefHeight="100.0" prefWidth="65.0" progress="0.0" />
+            <Label fx:id="dateLabel" layoutX="175.0" layoutY="224.0" prefHeight="85.0" prefWidth="218.0" text="date" wrapText="true">
+               <font>
+                  <Font name="Arial Rounded MT Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label layoutX="935.0" layoutY="216.0" prefHeight="93.0" prefWidth="257.0" text="Surname">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Label>
+            <Label layoutX="935.0" layoutY="267.0" prefHeight="93.0" prefWidth="257.0" text="First Name, M.I">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <Label layoutX="987.0" layoutY="360.0" prefHeight="51.0" prefWidth="189.0" text="xxxx-xxxxxx">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <Label layoutX="791.0" layoutY="360.0" prefHeight="51.0" prefWidth="129.0" text="Program">
+               <font>
+                  <Font size="26.0" />
+               </font>
+            </Label>
+            <Button fx:id="logout_btn" layoutX="1075.0" layoutY="72.0" mnemonicParsing="false" onAction="#logout" opacity="0.0" prefHeight="35.0" prefWidth="94.0" text="Logout" />
+            <Button fx:id="taskButton" layoutX="770.0" layoutY="535.0" mnemonicParsing="false" onAction="#gotoTask" opacity="0.0" prefHeight="40.0" prefWidth="94.0" text="Task" />
+            <Button fx:id="journalButton" layoutX="767.0" layoutY="615.0" mnemonicParsing="false" onAction="#gotoJournal" opacity="0.0" prefHeight="40.0" prefWidth="101.0" text="Journal" />
+            <Button fx:id="accountButton" layoutX="758.0" layoutY="459.0" mnemonicParsing="false" onAction="#toAccount" opacity="0.0" prefHeight="35.0" prefWidth="114.0" text="Account" />
+            <Label fx:id="quoteLabel" layoutX="935.0" layoutY="535.0" prefHeight="85.0" prefWidth="218.0" text="date" wrapText="true">
+               <font>
+                  <Font name="Arial Rounded MT Bold" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

@@ -181,7 +181,7 @@ private void setRandomQuote() {
         String user = DataStored.username;
             displayUsername.setText(user.substring(0, 1).toUpperCase() + user.substring(1));
             
-        }
+    }
 
         
     public void showTaskList(TableColumn<UserTask, String> tableColumn) throws SQLException {

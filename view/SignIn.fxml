@@ -30,7 +30,7 @@
                      <font>
                         <Font name="Arial Rounded MT Bold" size="19.0" />
                      </font></Button>
-                  <Hyperlink fx:id="goToSignup" layoutX="147.0" layoutY="305.0" onAction="#switchPane" prefHeight="22.0" prefWidth="118.0" text="Don't have an account?" textAlignment="CENTER">
+                  <Hyperlink fx:id="goToSignup" layoutX="132.0" layoutY="305.0" onAction="#switchPane" prefHeight="22.0" prefWidth="150.0" text="Don't have an account?" textAlignment="CENTER">
                      <font>
                         <Font size="11.0" />
                      </font></Hyperlink>
