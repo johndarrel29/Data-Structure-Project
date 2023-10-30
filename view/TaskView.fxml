@@ -8,6 +8,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
    <children>
@@ -18,13 +19,46 @@
       </ImageView>
       <Button fx:id="journalButton" layoutX="896.0" layoutY="69.0" mnemonicParsing="false" onAction="#toJournal" opacity="0.0" prefHeight="43.0" prefWidth="109.0" text="Journal" />
       <Button fx:id="homeButton" layoutX="1062.0" layoutY="63.0" mnemonicParsing="false" onAction="#toHomePage" prefHeight="56.0" prefWidth="109.0" text="Home" />
-      <Button fx:id="InserttaskButton" layoutX="1068.0" layoutY="291.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="34.0" prefWidth="81.0" text="Button" />
-      <TextArea fx:id="taskInput" layoutX="1017.0" layoutY="191.0" prefHeight="43.0" prefWidth="200.0" promptText="input task" />
-      <TableView fx:id="displayTaskTable" layoutX="56.0" layoutY="325.0" prefHeight="200.0" prefWidth="120.0">
-        <columns>
-          <TableColumn fx:id="Monday" prefWidth="118.0" text="Task" />
-        </columns>
-      </TableView>
-      <ChoiceBox fx:id="DaysChoices" layoutX="1017.0" layoutY="244.0" prefHeight="34.0" prefWidth="183.0" />
+      <Pane layoutX="977.0" layoutY="161.0" prefHeight="200.0" prefWidth="263.0">
+         <children>
+            <Button fx:id="InserttaskButton" layoutX="84.0" layoutY="127.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="34.0" prefWidth="81.0" text="Button" />
+            <ChoiceBox fx:id="DaysChoices" layoutX="33.0" layoutY="83.0" prefHeight="34.0" prefWidth="183.0" />
+            <TextArea fx:id="taskInput" layoutX="24.0" layoutY="36.0" prefHeight="43.0" prefWidth="200.0" promptText="input task" />
+         </children>
+      </Pane>
+      <Pane layoutX="35.0" layoutY="291.0" prefHeight="261.0" prefWidth="877.0">
+         <children>
+            <TableView fx:id="mondayTaskTable" layoutX="21.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+              <columns>
+                <TableColumn fx:id="Monday" prefWidth="118.0" text="Task" />
+              </columns>
+            </TableView>
+            <TableView fx:id="tuesdayTaskTable" layoutX="166.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Tuesday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="wednesdayTaskTable" layoutX="312.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Wednesday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="thursdayTaskTable" layoutX="462.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Thursday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="fridayTaskTable" layoutX="606.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Friday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="saturdayTaskTable" layoutX="749.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Saturday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

@@ -12,6 +12,7 @@ import alert.AlertMaker;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,10 +44,11 @@ public class TaskViewController implements Initializable {
     private TextArea taskInput;
 
     @FXML
-    TableView<UserTask> displayTaskTable;
+    TableView<UserTask> mondayTaskTable, tuesdayTaskTable, wednesdayTaskTable, 
+    thursdayTaskTable, fridayTaskTable, saturdayTaskTable;
 
     @FXML
-    TableColumn<UserTask, String> Monday;
+    TableColumn<UserTask, String> Monday, Tuesday, Wednesday, Thursday, Friday, Saturday;
 
     String userAccount = DataStored.username;
     
@@ -84,7 +86,7 @@ public class TaskViewController implements Initializable {
         connect = Database.DBConnect();
         statement = connect.createStatement();
 
-        String task = "SELECT Task FROM taskinput WHERE Task = '" + taskInput.getText() + "' AND Username = '" + userAccount + "'";;
+        String task = "SELECT Task FROM taskinput WHERE Task = '" + taskInput.getText() + "' AND Username = '" + userAccount + "' AND Day = '" + DaysChoices.getValue() + "'";
         
         ResultSet result = statement.executeQuery(task);
         
@@ -118,13 +120,13 @@ public class TaskViewController implements Initializable {
 
 
     //Retrieval of data from xampp
-    public ObservableList<UserTask> dataTaskList() throws SQLException {
+    public ObservableList<UserTask> dataTaskList(String day) throws SQLException {
         ObservableList<UserTask> DataList = FXCollections.observableArrayList();
 
         String selectedDay = DaysChoices.getValue();
     
         if (selectedDay != null && !selectedDay.isEmpty()) {
-            String retrieveData = "SELECT * FROM taskinput WHERE Username = '" + userAccount + "' AND Day = 'Monday'";
+            String retrieveData = "SELECT * FROM taskinput WHERE Username = '" + userAccount + "' AND Day = '" + day + "'";
             connect = Database.DBConnect();
             statement = connect.createStatement();
     
@@ -139,7 +141,7 @@ public class TaskViewController implements Initializable {
                 }
 
                 // Print the number of retrieved tasks
-                System.out.println("Retrieved " + DataList.size() + " tasks for Monday");
+                System.out.println("Retrieved " + DataList.size() + " tasks for " + day);
     
             } catch (Exception e) {
                 e.printStackTrace();
@@ -151,15 +153,27 @@ public class TaskViewController implements Initializable {
     
 
     public void showTaskList() throws SQLException {
-        TaskList = dataTaskList();
+        TaskList = dataTaskList("");
 
-        Monday.setCellValueFactory(new PropertyValueFactory<>("task"));
+        Monday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+        Tuesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+        Wednesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+        Thursday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+        Friday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+        Saturday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+
+        mondayTaskTable.setItems(dataTaskList("Monday"));
+        tuesdayTaskTable.setItems(dataTaskList("Tuesday"));
+        wednesdayTaskTable.setItems(dataTaskList("Wednesday"));
+        thursdayTaskTable.setItems(dataTaskList("Thursday"));
+        fridayTaskTable.setItems(dataTaskList("Friday"));
+        saturdayTaskTable.setItems(dataTaskList("Saturday"));
 
 
-        displayTaskTable.setItems(TaskList);
+
     }
 
-    @FXML
+    
     public void toHomePage(ActionEvent event) throws IOException {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Home.fxml"));
@@ -169,7 +183,7 @@ public class TaskViewController implements Initializable {
         stage.show();
     }
 
-    @FXML
+    
     public void toJournal(ActionEvent event) throws IOException {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Journal.fxml"));
