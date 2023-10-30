@@ -7,13 +7,15 @@ import javafx.beans.property.BooleanProperty;
 public class UserTask {
     private String task;
     private String admin;
+    private String day;
     private BooleanProperty completed; // Boolean property for the checkbox
     private Button retrieveButton;
 
-    public UserTask(String task) {
+    public UserTask(String task, String day) {
         this.task = task;
         this.completed = new SimpleBooleanProperty(false); // Default to unchecked
         this.retrieveButton = new Button("Retrieve");
+        this.day = day;
 
          // Set an action for the "Retrieve" button
          this.retrieveButton.setOnAction(event -> {
@@ -27,6 +29,14 @@ public class UserTask {
 
     public void setTask(String task) {
         this.task = task;
+    }
+
+    public String getDay() {
+        return day;
+    }
+
+    public void setDay(String day){
+        this.day = day;
     }
 
     public BooleanProperty completedProperty() {

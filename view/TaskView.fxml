@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -18,7 +18,6 @@
       </ImageView>
       <Button fx:id="journalButton" layoutX="896.0" layoutY="69.0" mnemonicParsing="false" onAction="#toJournal" opacity="0.0" prefHeight="43.0" prefWidth="109.0" text="Journal" />
       <Button fx:id="homeButton" layoutX="1062.0" layoutY="63.0" mnemonicParsing="false" onAction="#toHomePage" prefHeight="56.0" prefWidth="109.0" text="Home" />
-      <ComboBox fx:id="DaysChoices" layoutX="1027.0" layoutY="243.0" prefHeight="34.0" prefWidth="163.0" promptText="Choose Days" />
       <Button fx:id="InserttaskButton" layoutX="1068.0" layoutY="291.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="34.0" prefWidth="81.0" text="Button" />
       <TextArea fx:id="taskInput" layoutX="1017.0" layoutY="191.0" prefHeight="43.0" prefWidth="200.0" promptText="input task" />
       <TableView fx:id="displayTaskTable" layoutX="56.0" layoutY="325.0" prefHeight="200.0" prefWidth="120.0">
@@ -26,5 +25,6 @@
           <TableColumn fx:id="Monday" prefWidth="118.0" text="Task" />
         </columns>
       </TableView>
+      <ChoiceBox fx:id="DaysChoices" layoutX="1017.0" layoutY="244.0" prefHeight="34.0" prefWidth="183.0" />
    </children>
 </AnchorPane>

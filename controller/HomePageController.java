@@ -187,7 +187,7 @@ private void setRandomQuote() {
     public void showTaskList(TableColumn<UserTask, String> tableColumn) throws SQLException {
     TaskList = dataTaskList();
 
-    userTaskList.setCellValueFactory(new PropertyValueFactory<>("task"));
+    userTaskList.setCellValueFactory(new PropertyValueFactory<>("Task"));
 
     TableColumn<UserTask, Boolean> completedColumn = new TableColumn<>("Completed");
     completedColumn.setCellValueFactory(new PropertyValueFactory<>("completed"));
@@ -306,7 +306,7 @@ private void setRandomQuote() {
             UserTask UT;
 
             while (result.next()) {
-                UT = new UserTask(result.getString("Task"));
+                UT = new UserTask(result.getString("Task"), " ");
 
                 completedTaskList.add(UT);
             }
@@ -329,7 +329,7 @@ private void setRandomQuote() {
 
             while (resultSet.next()) {
                 String task = resultSet.getString("Task");
-                completedTasks.add(new UserTask(task));
+                completedTasks.add(new UserTask(task, " "));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -442,7 +442,7 @@ private void setRandomQuote() {
     
                     // Check if the task is not already in the list before adding it
                     if (TaskList.stream().noneMatch(task -> task.getTask().equals(memento.getTask()))) {
-                        TaskList.add(new UserTask(memento.getTask()));
+                        TaskList.add(new UserTask(memento.getTask(), " "));
                     }
                 }
     
@@ -471,7 +471,7 @@ private void setRandomQuote() {
                     statement.executeUpdate(insertQuery);
     
                     // Update the TaskList with the newly added task
-                    TaskList.add(new UserTask(memento.getTask()));
+                    TaskList.add(new UserTask(memento.getTask(), " "));
                 } else {
                     // If it was originally a delete, delete the task from the database
                     String deleteQuery = "DELETE FROM usertask WHERE Task = '" + memento.getTask() + "' AND Admin = '" + DataStored.username + "'";
@@ -505,7 +505,7 @@ private void setRandomQuote() {
             UserTask UT;
 
             while (result.next()) {
-                UT = new UserTask(result.getString("Task"));
+                UT = new UserTask(result.getString("Task"), " ");
 
                 DataList.add(UT);
             }

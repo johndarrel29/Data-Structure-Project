@@ -20,7 +20,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -34,7 +34,7 @@ import model.UserTaskMemento;
 public class TaskViewController implements Initializable {
 
     @FXML
-    private ComboBox DaysChoices;
+    private ChoiceBox<String> DaysChoices;
 
     @FXML
     private Button InserttaskButton, homeButton, journalButton;
@@ -49,8 +49,8 @@ public class TaskViewController implements Initializable {
     TableColumn<UserTask, String> Monday;
 
     String userAccount = DataStored.username;
-
-    ObservableList<UserTask> dataList;
+    
+    ObservableList<UserTask> TaskList;
 
     Connection connect;
     Statement statement;
@@ -64,89 +64,100 @@ public class TaskViewController implements Initializable {
             "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
         );
 
+        DaysChoices.setValue("Choose a day");
         DaysChoices.setItems(daysOfWeek);
 
 
-        Monday.setCellValueFactory(new PropertyValueFactory<>("task"));
+
         try {
-            showTask();
+            showTaskList();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-
     }
 
 
-    public void insertTask() throws SQLException {
+
+    public void insertTask()throws SQLException{
+
         connect = Database.DBConnect();
         statement = connect.createStatement();
-    
-        Object selectedDay = DaysChoices.getValue();
-        
-        if (selectedDay == null) {
-            AlertMaker.showSimpleAlert("Notifications", "Please select a day.");
-            return;
-        }
-    
-        String task = "SELECT Task FROM taskinput WHERE Task = '" + taskInput.getText() + "' AND Username = '" + userAccount + "'";
+
+        String task = "SELECT Task FROM taskinput WHERE Task = '" + taskInput.getText() + "' AND Username = '" + userAccount + "'";;
         
         ResultSet result = statement.executeQuery(task);
         
         if (result.next()) {
             AlertMaker.showSimpleAlert("Notifications", "Task is already existing");
         } else {
+
+            String selectedDay = DaysChoices.getValue();
+
             String insertTask = "INSERT INTO taskinput (Task, Username, Day) VALUES ('" + taskInput.getText() + "', '" +  userAccount + "', '" + selectedDay + "')";
             statement.executeUpdate(insertTask);
-    
-            // After inserting the task, update the table to reflect the changes
-            showTask();
+            System.out.println(selectedDay);
+            
+            // //save the current state for possible undo action
+            // undoStack.push(new UserTaskMemento(task_Input.getText(), DataStored.username, true));
+           
+            // //clear the redo stack, as a new action is performed
+            // redoStack.clear();
+
+            showTaskList();
+
+            // // Enable the "Undo" button when a new task is inserted
+            // UndoButton.setDisable(false);
+            // // Disable the "Redo" button when a new action is performed
+            // RedoButton.setDisable(true);
+            // deleteButton.setDisable(false);
         }
+
     }
 
-    public void showTask() throws SQLException {
-        Object selectedDay = DaysChoices.getValue();
-        
-        if (selectedDay == null) {
-            AlertMaker.showSimpleAlert("Notifications", "Please select a day.");
-            return;
-        }
-    
-        dataList = TaskList();
-        displayTaskTable.setItems(dataList);
-    }
+
 
     //Retrieval of data from xampp
-    public ObservableList<UserTask> TaskList() throws SQLException{
+    public ObservableList<UserTask> dataTaskList() throws SQLException {
         ObservableList<UserTask> DataList = FXCollections.observableArrayList();
 
-        String selectedDay = DaysChoices.getValue().toString();
+        String selectedDay = DaysChoices.getValue();
+    
+        if (selectedDay != null && !selectedDay.isEmpty()) {
+            String retrieveData = "SELECT * FROM taskinput WHERE Username = '" + userAccount + "' AND Day = 'Monday'";
+            connect = Database.DBConnect();
+            statement = connect.createStatement();
+    
+            try {
+                ResultSet result = statement.executeQuery(retrieveData);
+    
+                UserTask UT;
+    
+                while (result.next()) {
+                    UT = new UserTask(result.getString("Task"), result.getString("Day"));
+                    DataList.add(UT);
+                }
 
-        String retrieveData = "SELECT * FROM taskinput WHERE Username = '" + userAccount + "' AND Day = '" + selectedDay + "'";
-        connect = Database.DBConnect();
-        statement = connect.createStatement();
-
-        try {
-            ResultSet result = statement.executeQuery(retrieveData);
-
-            UserTask UT;
-
-            while (result.next()) {
-                UT = new UserTask(result.getString("Task"));
-
-                DataList.add(UT);
+                // Print the number of retrieved tasks
+                System.out.println("Retrieved " + DataList.size() + " tasks for Monday");
+    
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
+    
         return DataList;
-
-    
     }
-
     
+
+    public void showTaskList() throws SQLException {
+        TaskList = dataTaskList();
+
+        Monday.setCellValueFactory(new PropertyValueFactory<>("task"));
+
+
+        displayTaskTable.setItems(TaskList);
+    }
 
     @FXML
     public void toHomePage(ActionEvent event) throws IOException {
