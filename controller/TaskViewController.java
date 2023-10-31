@@ -89,8 +89,9 @@ public class TaskViewController implements Initializable {
 
     public void insertTask() {
     String selectedDay = DaysChoices.getValue(); // Get the selected day
-
-    if (selectedDay != null && !selectedDay.isEmpty()) {
+    String taskText = taskInput.getText().trim();
+ 
+    if (!selectedDay.equals("Choose a day") && !taskText.isEmpty()) {
         try (Connection connection = Database.DBConnect()) {
             String task = "SELECT Task FROM taskinput WHERE Task = ? AND Username = ? AND Day = ?";
             PreparedStatement statement = connection.prepareStatement(task);
@@ -108,7 +109,7 @@ public class TaskViewController implements Initializable {
                 statement.setString(1, taskInput.getText());
                 statement.setString(2, userAccount);
                 statement.setString(3, selectedDay);
-                statement.executeUpdate();
+                statement.executeUpdate();  
 
                 // Save the current state for possible undo action
                 undoStack.push(new UserTaskMemento(taskInput.getText(), DataStored.username, selectedDay, true));
@@ -126,6 +127,9 @@ public class TaskViewController implements Initializable {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        } else {
+            // Display an error message if the input is empty
+            AlertMaker.showSimpleAlert("Input Error", "Please enter a non-empty task before inserting.");
         }
     }
 
@@ -176,7 +180,7 @@ public class TaskViewController implements Initializable {
         }
     }
 
-    //we cant spam this
+    
     public void undo() throws SQLException {
         if (!undoStack.isEmpty()) {
             UserTaskMemento memento = undoStack.pop();
@@ -230,7 +234,7 @@ public class TaskViewController implements Initializable {
         }
     }
 
-    //we cant spam this..may bug 
+    
     public void redo() throws SQLException {
         if (!redoStack.isEmpty()) {
             UserTaskMemento memento = redoStack.pop();

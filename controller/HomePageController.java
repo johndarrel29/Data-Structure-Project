@@ -362,7 +362,7 @@ private void setRandomQuote() {
             statement.executeUpdate(insertTask);
             
             //save the current state for possible undo action
-            undoStack.push(new UserTaskMemento(task_Input.getText(), DataStored.username, true));
+            undoStack.push(new UserTaskMemento(task_Input.getText(), DataStored.username, "", true));
            
             //clear the redo stack, as a new action is performed
             redoStack.clear();
@@ -385,7 +385,7 @@ private void setRandomQuote() {
             statement = connect.createStatement();
 
             // Create a backup of the deleted task for undo
-            UserTaskMemento memento = new UserTaskMemento(selectedTask.getTask(), DataStored.username, false);
+            UserTaskMemento memento = new UserTaskMemento(selectedTask.getTask(), DataStored.username, "", false);
             
             String deleteQuery = "DELETE FROM usertask WHERE Task = '" + selectedTask.getTask() + "'";
             
