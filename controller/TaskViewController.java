@@ -114,14 +114,12 @@ public class TaskViewController implements Initializable {
                 // Save the current state for possible undo action
                 undoStack.push(new UserTaskMemento(taskInput.getText(), DataStored.username, selectedDay, true));
 
-                // Clear the redo stack, as a new action is performed
                 redoStack.clear();
 
                 showTaskList();
 
-                // Enable the "Undo" button when a new task is inserted
+              
                 UndoButton.setDisable(false);
-                // Disable the "Redo" button when a new action is performed
                 RedoButton.setDisable(true);
                 }   
             } catch (SQLException e) {
@@ -133,53 +131,104 @@ public class TaskViewController implements Initializable {
         }
     }
     
-    public void deletetask() {
-        UserTask selectedTask = mondayTaskTable.getSelectionModel().getSelectedItem();
-    
-        if (selectedTask != null) {
-            try (Connection connection = Database.DBConnect()) {
-                String deleteQuery = "DELETE FROM taskinput WHERE Task = ? AND Username = ? AND Day = ?";
-                PreparedStatement statement = connection.prepareStatement(deleteQuery);
-                statement.setString(1, selectedTask.getTask());
-                statement.setString(2, userAccount);
-                statement.setString(3, "Monday");
-    
-                int rowsAffected = statement.executeUpdate();
-    
-                if (rowsAffected > 0) {
-                    // Successfully deleted the task from the database
-    
-                    // Push a memento onto the undoStack
-                    undoStack.push(new UserTaskMemento(selectedTask.getTask(), userAccount, "Monday", false));
-    
-                    // Remove the task from the TaskList
-                    TaskList.remove(selectedTask);
-    
-                    // Clear the redo stack, as a new action is performed
-                    redoStack.clear();
-    
-                    // Disable the "Redo" button when a delete is performed
-                    RedoButton.setDisable(true);
-    
-                    // Refresh the task table view
-                    showTaskList();
-    
-                    // Disable the "Undo" button when the undoStack is empty
-                    UndoButton.setDisable(undoStack.isEmpty());
-                } else {
-                    // Task deletion was not successful, display an error message
-                    AlertMaker.showSimpleAlert("Error", "Failed to delete the task.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+
+    //---------------------DELETE TASK LNG TO ------------------------------------- 
+
+    public void deleteSelectedTask() {
+        TableView<UserTask> selectedTableView = getSelectedTableView();
+        if (selectedTableView != null) {
+            UserTask selectedTask = selectedTableView.getSelectionModel().getSelectedItem();
+            if (selectedTask != null) {
+                // Delete the selected task
+                deletetask(selectedTask, selectedTableView);
+            } else {
+                AlertMaker.showSimpleAlert("Oops!", "Select a task to delete.");
             }
         } else {
-            AlertMaker.showSimpleAlert("Oops!", "Select a task to delete.");
+            AlertMaker.showSimpleAlert("Oops!", "Select a task and a day to delete.");
+        }
+    }
+
+
+    public void deletetask(UserTask selectedTask, TableView<UserTask> selectedTableView) {
+        try (Connection connection = Database.DBConnect()) {
+            String deleteQuery = "DELETE FROM taskinput WHERE Task = ? AND Username = ? AND Day = ?";
+            PreparedStatement statement = connection.prepareStatement(deleteQuery);
+            statement.setString(1, selectedTask.getTask());
+            statement.setString(2, userAccount);
+            statement.setString(3, getDayFromTableView(selectedTableView));
+    
+            int rowsAffected = statement.executeUpdate();
+    
+            if (rowsAffected > 0) {
+                // Successfully deleted the task from the database
+    
+                // Push a memento onto the undoStack
+                undoStack.push(new UserTaskMemento(selectedTask.getTask(), userAccount, getDayFromTableView(selectedTableView), false));
+    
+                // Remove the task from the TaskList
+                TaskList.remove(selectedTask);
+    
+                // Clear the redo stack, as a new action is performed
+                redoStack.clear();
+    
+                // Disable the "Redo" button when a delete is performed
+                RedoButton.setDisable(true);
+    
+                // Refresh the task table view
+                showTaskList();
+    
+                // Disable the "Undo" button when the undoStack is empty
+                UndoButton.setDisable(undoStack.isEmpty());
+            } else {
+                // Task deletion was not successful, display an error message
+                AlertMaker.showSimpleAlert("Error", "Failed to delete the task.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private TableView<UserTask> getSelectedTableView() {
+        if (mondayTaskTable.getSelectionModel().getSelectedItem() != null) {
+            return mondayTaskTable;
+        } else if (tuesdayTaskTable.getSelectionModel().getSelectedItem() != null) {
+            return tuesdayTaskTable;
+        } else if (wednesdayTaskTable.getSelectionModel().getSelectedItem() != null) {
+            return wednesdayTaskTable;
+        } else if (thursdayTaskTable.getSelectionModel().getSelectedItem() != null) {
+            return thursdayTaskTable;
+        } else if (fridayTaskTable.getSelectionModel().getSelectedItem() != null) {
+            return fridayTaskTable;
+        } else if (saturdayTaskTable.getSelectionModel().getSelectedItem() != null) {
+            return saturdayTaskTable;
+        } else {
+            return null;
+        }
+    }
+
+    private String getDayFromTableView(TableView<UserTask> selectedTableView) {
+        if (selectedTableView == mondayTaskTable) {
+            return "Monday";
+        } else if (selectedTableView == tuesdayTaskTable) {
+            return "Tuesday";
+        } else if (selectedTableView == wednesdayTaskTable) {
+            return "Wednesday";
+        } else if (selectedTableView == thursdayTaskTable) {
+            return "Thursday";
+        } else if (selectedTableView == fridayTaskTable) {
+            return "Friday";
+        } else if (selectedTableView == saturdayTaskTable) {
+            return "Saturday";
+        } else {
+            return "";
         }
     }
     
-    
+    //------------------DELETE TASK LNG TO ---------------------------------------
 
+    
+    
 
     public void undo() throws SQLException {
         if (!undoStack.isEmpty()) {
@@ -284,6 +333,13 @@ public class TaskViewController implements Initializable {
     }
     
 
+
+
+
+
+
+
+
     //--------------DISPLAY OF TASKS----------------------------------
 
     //Retrieval of data from xampp
@@ -307,10 +363,10 @@ public class TaskViewController implements Initializable {
     }
 
     public void showTaskList() throws SQLException {
-        
-        try (Connection connection = Database.DBConnect()) {
-
-            TaskList = dataTaskList(connection, "");
+    try (Connection connection = Database.DBConnect()) {
+        String selectedDay = DaysChoices.getValue(); // Get the selected day
+        if (selectedDay != null && !selectedDay.isEmpty()) {
+            TaskList = dataTaskList(connection, selectedDay);
             Monday.setCellValueFactory(new PropertyValueFactory<>("Task"));
             Tuesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
             Wednesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
@@ -323,12 +379,12 @@ public class TaskViewController implements Initializable {
             thursdayTaskTable.setItems(dataTaskList(connection, "Thursday"));
             fridayTaskTable.setItems(dataTaskList(connection, "Friday"));
             saturdayTaskTable.setItems(dataTaskList(connection, "Saturday"));
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
+
 
 
 

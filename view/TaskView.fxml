@@ -24,7 +24,7 @@
             <Button fx:id="InserttaskButton" layoutX="33.0" layoutY="124.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="34.0" prefWidth="81.0" text="Insert" />
             <ChoiceBox fx:id="DaysChoices" layoutX="33.0" layoutY="83.0" prefHeight="34.0" prefWidth="183.0" />
             <TextArea fx:id="taskInput" layoutX="24.0" layoutY="36.0" prefHeight="43.0" prefWidth="200.0" promptText="input task" />
-            <Button fx:id="deleteButton" layoutX="132.0" layoutY="124.0" mnemonicParsing="false" onAction="#deletetask" prefHeight="34.0" prefWidth="81.0" text="Delete" />
+            <Button fx:id="deleteButton" layoutX="132.0" layoutY="124.0" mnemonicParsing="false" onAction="#deleteSelectedTask" prefHeight="34.0" prefWidth="81.0" text="Delete" />
          </children>
       </Pane>
       <Pane layoutX="41.0" layoutY="291.0" prefHeight="261.0" prefWidth="871.0">
