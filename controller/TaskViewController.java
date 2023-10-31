@@ -40,7 +40,7 @@ public class TaskViewController implements Initializable {
     private ChoiceBox<String> DaysChoices;
 
     @FXML
-    private Button InserttaskButton, homeButton, journalButton, UndoButton, RedoButton;
+    private Button InserttaskButton, homeButton, journalButton, UndoButton, RedoButton, deleteButton;
 
     @FXML
     private TextArea taskInput;
@@ -129,58 +129,58 @@ public class TaskViewController implements Initializable {
             }
         } else {
             // Display an error message if the input is empty
-            AlertMaker.showSimpleAlert("Input Error", "Please enter a non-empty task before inserting.");
+            AlertMaker.showSimpleAlert("Input Error", "Input Cannot be Blanked.");
         }
     }
-
-
-
-    //Retrieval of data from xampp
-    public ObservableList<UserTask> dataTaskList(Connection connection, String day) throws SQLException {
-        ObservableList<UserTask> DataList = FXCollections.observableArrayList();
-        String selectedDay = DaysChoices.getValue();
-        if (selectedDay != null && !selectedDay.isEmpty()) {
-            String retrieveData = "SELECT * FROM taskinput WHERE Username = ? AND Day = ?";
-            PreparedStatement statement = connection.prepareStatement(retrieveData);
-            statement.setString(1, userAccount);
-            statement.setString(2, day);
-            ResultSet result = statement.executeQuery();
-            UserTask UT;
-            while (result.next()) {
-                UT = new UserTask(result.getString("Task"), result.getString("Day"));
-                DataList.add(UT);
+    
+    public void deletetask() {
+        UserTask selectedTask = mondayTaskTable.getSelectionModel().getSelectedItem();
+    
+        if (selectedTask != null) {
+            try (Connection connection = Database.DBConnect()) {
+                String deleteQuery = "DELETE FROM taskinput WHERE Task = ? AND Username = ? AND Day = ?";
+                PreparedStatement statement = connection.prepareStatement(deleteQuery);
+                statement.setString(1, selectedTask.getTask());
+                statement.setString(2, userAccount);
+                statement.setString(3, "Monday");
+    
+                int rowsAffected = statement.executeUpdate();
+    
+                if (rowsAffected > 0) {
+                    // Successfully deleted the task from the database
+    
+                    // Push a memento onto the undoStack
+                    undoStack.push(new UserTaskMemento(selectedTask.getTask(), userAccount, "Monday", false));
+    
+                    // Remove the task from the TaskList
+                    TaskList.remove(selectedTask);
+    
+                    // Clear the redo stack, as a new action is performed
+                    redoStack.clear();
+    
+                    // Disable the "Redo" button when a delete is performed
+                    RedoButton.setDisable(true);
+    
+                    // Refresh the task table view
+                    showTaskList();
+    
+                    // Disable the "Undo" button when the undoStack is empty
+                    UndoButton.setDisable(undoStack.isEmpty());
+                } else {
+                    // Task deletion was not successful, display an error message
+                    AlertMaker.showSimpleAlert("Error", "Failed to delete the task.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            System.out.println("Retrieved " + DataList.size() + " tasks for " + day);
-        }
-        return DataList;
-    }
-    
-
-    public void showTaskList() throws SQLException {
-        
-        try (Connection connection = Database.DBConnect()) {
-
-            TaskList = dataTaskList(connection, "");
-            Monday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-            Tuesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-            Wednesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-            Thursday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-            Friday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-            Saturday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-            mondayTaskTable.setItems(dataTaskList(connection, "Monday"));
-            tuesdayTaskTable.setItems(dataTaskList(connection, "Tuesday"));
-            wednesdayTaskTable.setItems(dataTaskList(connection, "Wednesday"));
-            thursdayTaskTable.setItems(dataTaskList(connection, "Thursday"));
-            fridayTaskTable.setItems(dataTaskList(connection, "Friday"));
-            saturdayTaskTable.setItems(dataTaskList(connection, "Saturday"));
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } else {
+            AlertMaker.showSimpleAlert("Oops!", "Select a task to delete.");
         }
     }
-
     
+    
+
+
     public void undo() throws SQLException {
         if (!undoStack.isEmpty()) {
             UserTaskMemento memento = undoStack.pop();
@@ -284,7 +284,51 @@ public class TaskViewController implements Initializable {
     }
     
 
+    //--------------DISPLAY OF TASKS----------------------------------
 
+    //Retrieval of data from xampp
+    public ObservableList<UserTask> dataTaskList(Connection connection, String day) throws SQLException {
+        ObservableList<UserTask> DataList = FXCollections.observableArrayList();
+        String selectedDay = DaysChoices.getValue();
+        if (selectedDay != null && !selectedDay.isEmpty()) {
+            String retrieveData = "SELECT * FROM taskinput WHERE Username = ? AND Day = ?";
+            PreparedStatement statement = connection.prepareStatement(retrieveData);
+            statement.setString(1, userAccount);
+            statement.setString(2, day);
+            ResultSet result = statement.executeQuery();
+            UserTask UT;
+            while (result.next()) {
+                UT = new UserTask(result.getString("Task"), result.getString("Day"));
+                DataList.add(UT);
+            }
+            System.out.println("Retrieved " + DataList.size() + " tasks for " + day);
+        }
+        return DataList;
+    }
+
+    public void showTaskList() throws SQLException {
+        
+        try (Connection connection = Database.DBConnect()) {
+
+            TaskList = dataTaskList(connection, "");
+            Monday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Tuesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Wednesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Thursday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Friday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Saturday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            mondayTaskTable.setItems(dataTaskList(connection, "Monday"));
+            tuesdayTaskTable.setItems(dataTaskList(connection, "Tuesday"));
+            wednesdayTaskTable.setItems(dataTaskList(connection, "Wednesday"));
+            thursdayTaskTable.setItems(dataTaskList(connection, "Thursday"));
+            fridayTaskTable.setItems(dataTaskList(connection, "Friday"));
+            saturdayTaskTable.setItems(dataTaskList(connection, "Saturday"));
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
