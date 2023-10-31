@@ -26,7 +26,7 @@
             <TextArea fx:id="taskInput" layoutX="24.0" layoutY="36.0" prefHeight="43.0" prefWidth="200.0" promptText="input task" />
          </children>
       </Pane>
-      <Pane layoutX="35.0" layoutY="291.0" prefHeight="261.0" prefWidth="877.0">
+      <Pane layoutX="41.0" layoutY="291.0" prefHeight="261.0" prefWidth="871.0">
          <children>
             <TableView fx:id="mondayTaskTable" layoutX="21.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
               <columns>
@@ -60,5 +60,7 @@
             </TableView>
          </children>
       </Pane>
+      <Button fx:id="UndoButton" layoutX="47.0" layoutY="191.0" mnemonicParsing="false" onAction="#undo" text="Undo" />
+      <Button fx:id="RedoButton" layoutX="99.0" layoutY="191.0" mnemonicParsing="false" onAction="#redo" text="Redo" />
    </children>
 </AnchorPane>

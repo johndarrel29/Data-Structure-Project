@@ -3,10 +3,12 @@ package controller;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
+import java.util.Stack;
 
 import alert.AlertMaker;
 import javafx.collections.FXCollections;
@@ -38,7 +40,7 @@ public class TaskViewController implements Initializable {
     private ChoiceBox<String> DaysChoices;
 
     @FXML
-    private Button InserttaskButton, homeButton, journalButton;
+    private Button InserttaskButton, homeButton, journalButton, UndoButton, RedoButton;
 
     @FXML
     private TextArea taskInput;
@@ -54,8 +56,9 @@ public class TaskViewController implements Initializable {
     
     ObservableList<UserTask> TaskList;
 
-    Connection connect;
-    Statement statement;
+    Stack<UserTaskMemento> undoStack = new Stack<>();
+    Stack<UserTaskMemento> redoStack = new Stack<>();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -77,102 +80,211 @@ public class TaskViewController implements Initializable {
             e.printStackTrace();
         }
 
+        UndoButton.setDisable(true);
+        RedoButton.setDisable(true);
+
     }
 
 
 
-    public void insertTask()throws SQLException{
+    public void insertTask() {
+    String selectedDay = DaysChoices.getValue(); // Get the selected day
 
-        connect = Database.DBConnect();
-        statement = connect.createStatement();
+    if (selectedDay != null && !selectedDay.isEmpty()) {
+        try (Connection connection = Database.DBConnect()) {
+            String task = "SELECT Task FROM taskinput WHERE Task = ? AND Username = ? AND Day = ?";
+            PreparedStatement statement = connection.prepareStatement(task);
+            statement.setString(1, taskInput.getText());
+            statement.setString(2, userAccount);
+            statement.setString(3, selectedDay);
 
-        String task = "SELECT Task FROM taskinput WHERE Task = '" + taskInput.getText() + "' AND Username = '" + userAccount + "' AND Day = '" + DaysChoices.getValue() + "'";
-        
-        ResultSet result = statement.executeQuery(task);
-        
-        if (result.next()) {
-            AlertMaker.showSimpleAlert("Notifications", "Task is already existing");
-        } else {
+            ResultSet result = statement.executeQuery();
 
-            String selectedDay = DaysChoices.getValue();
+            if (result.next()) {
+                AlertMaker.showSimpleAlert("Notifications", "Task is already existing");
+            } else {
+                String insertTask = "INSERT INTO taskinput (Task, Username, Day) VALUES (?, ?, ?)";
+                statement = connection.prepareStatement(insertTask);
+                statement.setString(1, taskInput.getText());
+                statement.setString(2, userAccount);
+                statement.setString(3, selectedDay);
+                statement.executeUpdate();
 
-            String insertTask = "INSERT INTO taskinput (Task, Username, Day) VALUES ('" + taskInput.getText() + "', '" +  userAccount + "', '" + selectedDay + "')";
-            statement.executeUpdate(insertTask);
-            System.out.println(selectedDay);
-            
-            // //save the current state for possible undo action
-            // undoStack.push(new UserTaskMemento(task_Input.getText(), DataStored.username, true));
-           
-            // //clear the redo stack, as a new action is performed
-            // redoStack.clear();
+                // Save the current state for possible undo action
+                undoStack.push(new UserTaskMemento(taskInput.getText(), DataStored.username, selectedDay, true));
 
-            showTaskList();
+                // Clear the redo stack, as a new action is performed
+                redoStack.clear();
 
-            // // Enable the "Undo" button when a new task is inserted
-            // UndoButton.setDisable(false);
-            // // Disable the "Redo" button when a new action is performed
-            // RedoButton.setDisable(true);
-            // deleteButton.setDisable(false);
+                showTaskList();
+
+                // Enable the "Undo" button when a new task is inserted
+                UndoButton.setDisable(false);
+                // Disable the "Redo" button when a new action is performed
+                RedoButton.setDisable(true);
+                }   
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
 
 
     //Retrieval of data from xampp
-    public ObservableList<UserTask> dataTaskList(String day) throws SQLException {
+    public ObservableList<UserTask> dataTaskList(Connection connection, String day) throws SQLException {
         ObservableList<UserTask> DataList = FXCollections.observableArrayList();
-
         String selectedDay = DaysChoices.getValue();
-    
         if (selectedDay != null && !selectedDay.isEmpty()) {
-            String retrieveData = "SELECT * FROM taskinput WHERE Username = '" + userAccount + "' AND Day = '" + day + "'";
-            connect = Database.DBConnect();
-            statement = connect.createStatement();
-    
-            try {
-                ResultSet result = statement.executeQuery(retrieveData);
-    
-                UserTask UT;
-    
-                while (result.next()) {
-                    UT = new UserTask(result.getString("Task"), result.getString("Day"));
-                    DataList.add(UT);
-                }
-
-                // Print the number of retrieved tasks
-                System.out.println("Retrieved " + DataList.size() + " tasks for " + day);
-    
-            } catch (Exception e) {
-                e.printStackTrace();
+            String retrieveData = "SELECT * FROM taskinput WHERE Username = ? AND Day = ?";
+            PreparedStatement statement = connection.prepareStatement(retrieveData);
+            statement.setString(1, userAccount);
+            statement.setString(2, day);
+            ResultSet result = statement.executeQuery();
+            UserTask UT;
+            while (result.next()) {
+                UT = new UserTask(result.getString("Task"), result.getString("Day"));
+                DataList.add(UT);
             }
+            System.out.println("Retrieved " + DataList.size() + " tasks for " + day);
         }
-    
         return DataList;
     }
     
 
     public void showTaskList() throws SQLException {
-        TaskList = dataTaskList("");
+        
+        try (Connection connection = Database.DBConnect()) {
 
-        Monday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-        Tuesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-        Wednesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-        Thursday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-        Friday.setCellValueFactory(new PropertyValueFactory<>("Task"));
-        Saturday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            TaskList = dataTaskList(connection, "");
+            Monday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Tuesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Wednesday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Thursday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Friday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            Saturday.setCellValueFactory(new PropertyValueFactory<>("Task"));
+            mondayTaskTable.setItems(dataTaskList(connection, "Monday"));
+            tuesdayTaskTable.setItems(dataTaskList(connection, "Tuesday"));
+            wednesdayTaskTable.setItems(dataTaskList(connection, "Wednesday"));
+            thursdayTaskTable.setItems(dataTaskList(connection, "Thursday"));
+            fridayTaskTable.setItems(dataTaskList(connection, "Friday"));
+            saturdayTaskTable.setItems(dataTaskList(connection, "Saturday"));
 
-        mondayTaskTable.setItems(dataTaskList("Monday"));
-        tuesdayTaskTable.setItems(dataTaskList("Tuesday"));
-        wednesdayTaskTable.setItems(dataTaskList("Wednesday"));
-        thursdayTaskTable.setItems(dataTaskList("Thursday"));
-        fridayTaskTable.setItems(dataTaskList("Friday"));
-        saturdayTaskTable.setItems(dataTaskList("Saturday"));
 
-
-
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
+    //we cant spam this
+    public void undo() throws SQLException {
+        if (!undoStack.isEmpty()) {
+            UserTaskMemento memento = undoStack.pop();
+            if (DataStored.username.equals(memento.getUserAccount())) {
+                redoStack.push(memento);
+
+                if (memento.isInsert()) {
+                    // If it was originally an insert, delete the task from the database
+                    try (Connection connection = Database.DBConnect()) {
+                        String deleteQuery = "DELETE FROM taskinput WHERE Task = ? AND Username = ? AND Day = ?";
+                        PreparedStatement statement = connection.prepareStatement(deleteQuery);
+                        statement.setString(1, memento.getTask());
+                        statement.setString(2, DataStored.username);
+                        statement.setString(3, memento.getDay());
+                        statement.executeUpdate();
+                    }
+
+                    // Remove the task from TaskList
+                    TaskList.removeIf(task -> task.getTask().equals(memento.getTask()));
+                } else {
+                    // If it was originally a delete, insert the task back into the database
+                    try (Connection connection = Database.DBConnect()) {
+                        String insertQuery = "INSERT INTO taskinput (Task, Username, Day) VALUES (?, ?, ?)";
+                        PreparedStatement statement = connection.prepareStatement(insertQuery);
+                        statement.setString(1, memento.getTask());
+                        statement.setString(2, DataStored.username);
+                        statement.setString(3, memento.getDay());
+                        statement.executeUpdate();
+                    }
+
+                    // Check if the task is not already in the list before adding it
+                    if (TaskList.stream().noneMatch(task -> task.getTask().equals(memento.getTask()))) {
+                        TaskList.add(new UserTask(memento.getTask(), " "));
+                    }
+                }
+
+                try (Connection connection = Database.DBConnect()) {
+                    mondayTaskTable.setItems(dataTaskList(connection, "Monday"));
+                    tuesdayTaskTable.setItems(dataTaskList(connection, "Tuesday"));
+                    wednesdayTaskTable.setItems(dataTaskList(connection, "Wednesday"));
+                    thursdayTaskTable.setItems(dataTaskList(connection, "Thursday"));
+                    fridayTaskTable.setItems(dataTaskList(connection, "Friday"));
+                    saturdayTaskTable.setItems(dataTaskList(connection, "Saturday"));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                UndoButton.setDisable(undoStack.isEmpty());
+                RedoButton.setDisable(false);
+            }
+        }
+    }
+
+    //we cant spam this..may bug 
+    public void redo() throws SQLException {
+        if (!redoStack.isEmpty()) {
+            UserTaskMemento memento = redoStack.pop();
+            if (DataStored.username.equals(memento.getUserAccount())) {
+                undoStack.push(memento);
+    
+                try (Connection connection = Database.DBConnect()) {
+                    if (memento.isInsert()) {
+                        // If it was originally an insert, insert the task back into the database
+                        String insertQuery = "INSERT INTO taskinput (Task, Username, Day) VALUES (?, ?, ?)";
+                        PreparedStatement statement = connection.prepareStatement(insertQuery);
+                        statement.setString(1, memento.getTask());
+                        statement.setString(2, DataStored.username);
+                        statement.setString(3, memento.getDay());
+                        statement.executeUpdate();
+    
+                        // Update the TaskList with the newly added task
+                        TaskList.add(new UserTask(memento.getTask(), " "));
+                    } else {
+                        // If it was originally a delete, delete the task from the database
+                        String deleteQuery = "DELETE FROM taskinput WHERE Task = ? AND Username = ? AND Day = ?";
+                        PreparedStatement statement = connection.prepareStatement(deleteQuery);
+                        statement.setString(1, memento.getTask());
+                        statement.setString(2, DataStored.username);
+                        statement.setString(3, memento.getDay());
+                        statement.executeUpdate();
+    
+                        // Remove the task from TaskList
+                        TaskList.removeIf(task -> task.getTask().equals(memento.getTask()));
+                    }
+    
+                    // Set the table view items
+                    mondayTaskTable.setItems(dataTaskList(connection, "Monday"));
+                    tuesdayTaskTable.setItems(dataTaskList(connection, "Tuesday"));
+                    wednesdayTaskTable.setItems(dataTaskList(connection, "Wednesday"));
+                    thursdayTaskTable.setItems(dataTaskList(connection, "Thursday"));
+                    fridayTaskTable.setItems(dataTaskList(connection, "Friday"));
+                    saturdayTaskTable.setItems(dataTaskList(connection, "Saturday"));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+    
+                UndoButton.setDisable(false);
+                RedoButton.setDisable(redoStack.isEmpty());
+            }
+        }
+    }
+    
+
+
+
+
+
+//---------------------Buttons-------------------------------------
     
     public void toHomePage(ActionEvent event) throws IOException {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
