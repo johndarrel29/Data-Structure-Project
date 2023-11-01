@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
    <children>
       <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -63,5 +63,10 @@
       </Pane>
       <Button fx:id="UndoButton" layoutX="47.0" layoutY="191.0" mnemonicParsing="false" onAction="#undo" text="Undo" />
       <Button fx:id="RedoButton" layoutX="99.0" layoutY="191.0" mnemonicParsing="false" onAction="#redo" text="Redo" />
+      <TableView fx:id="doneTaskTable" layoutX="1009.0" layoutY="475.0" prefHeight="154.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="doneList" prefWidth="139.99993896484375" text="C1" />
+        </columns>
+      </TableView>
    </children>
 </AnchorPane>
