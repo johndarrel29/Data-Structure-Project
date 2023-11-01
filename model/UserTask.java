@@ -10,12 +10,14 @@ public class UserTask {
     private String day;
     private BooleanProperty completed; // Boolean property for the checkbox
     private Button retrieveButton;
+    // private BooleanProperty completed = new SimpleBooleanProperty(false);
 
-    public UserTask(String task, String day) {
+    public UserTask(String task, String day, boolean completed) {
         this.task = task;
         this.completed = new SimpleBooleanProperty(false); // Default to unchecked
         this.retrieveButton = new Button("Retrieve");
         this.day = day;
+        this.completed = new SimpleBooleanProperty(completed);
 
          // Set an action for the "Retrieve" button
          this.retrieveButton.setOnAction(event -> {
