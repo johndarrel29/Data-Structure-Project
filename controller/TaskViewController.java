@@ -6,15 +6,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ResourceBundle;
 import java.util.Stack;
 
 import alert.AlertMaker;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,9 +21,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.DataStored;
@@ -50,20 +49,43 @@ public class TaskViewController implements Initializable {
     thursdayTaskTable, fridayTaskTable, saturdayTaskTable;
 
     @FXML
+    TableView<UserTask> doneTaskTable;
+
+    @FXML
     TableColumn<UserTask, String> Monday, Tuesday, Wednesday, Thursday, Friday, Saturday;
+
+    TableColumn<UserTask, Boolean> completedColumn; // Add the "Completed" column
+
+    TableColumn<UserTask, String> retrieveColumn;
+
+    TableColumn<UserTask, String> doneList;
+
+    // Separate "Completed" columns for each day
+    TableColumn<UserTask, Boolean> mondayCompletedColumn;
+    TableColumn<UserTask, Boolean> tuesdayCompletedColumn;
+    TableColumn<UserTask, Boolean> wednesdayCompletedColumn;
+    TableColumn<UserTask, Boolean> thursdayCompletedColumn;
+    TableColumn<UserTask, Boolean> fridayCompletedColumn;
+    TableColumn<UserTask, Boolean> saturdayCompletedColumn;
+
+    // Create separate retrieveColumns for each TableView
+    TableColumn<UserTask, String> retrieveColumnMonday = createRetrieveColumn();
+    TableColumn<UserTask, String> retrieveColumnTuesday = createRetrieveColumn();
+    TableColumn<UserTask, String> retrieveColumnWednesday = createRetrieveColumn();
+    TableColumn<UserTask, String> retrieveColumnThursday = createRetrieveColumn();
+    TableColumn<UserTask, String> retrieveColumnFriday = createRetrieveColumn();
+    TableColumn<UserTask, String> retrieveColumnSaturday = createRetrieveColumn();
 
     String userAccount = DataStored.username;
     
     ObservableList<UserTask> TaskList;
+    
 
     Stack<UserTaskMemento> undoStack = new Stack<>();
     Stack<UserTaskMemento> redoStack = new Stack<>();
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-
 
         ObservableList<String> daysOfWeek = FXCollections.observableArrayList(
             "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
@@ -72,7 +94,47 @@ public class TaskViewController implements Initializable {
         DaysChoices.setValue("Choose a day");
         DaysChoices.setItems(daysOfWeek);
 
+        completedColumn = createCompletedColumn();
 
+        // Initialize the "Completed" columns for each day
+        mondayCompletedColumn = createCompletedColumn();
+        tuesdayCompletedColumn = createCompletedColumn();
+        wednesdayCompletedColumn = createCompletedColumn();
+        thursdayCompletedColumn = createCompletedColumn();
+        fridayCompletedColumn = createCompletedColumn();
+        saturdayCompletedColumn = createCompletedColumn();
+
+        // Add the "Completed" columns to their respective TableView 
+        mondayTaskTable.getColumns().add(mondayCompletedColumn);
+        tuesdayTaskTable.getColumns().add(tuesdayCompletedColumn);
+        wednesdayTaskTable.getColumns().add(wednesdayCompletedColumn);
+        thursdayTaskTable.getColumns().add(thursdayCompletedColumn);
+        fridayTaskTable.getColumns().add(fridayCompletedColumn);
+        saturdayTaskTable.getColumns().add(saturdayCompletedColumn);
+
+         // Set the TableView to be editable (ito yung para maging clickable yung checkbox)
+        mondayTaskTable.setEditable(true);
+        tuesdayTaskTable.setEditable(true);
+        wednesdayTaskTable.setEditable(true);
+        thursdayTaskTable.setEditable(true);
+        fridayTaskTable.setEditable(true);
+        saturdayTaskTable.setEditable(true);
+
+        // Add the retrieveColumns to their respective TableView
+        mondayTaskTable.getColumns().add(retrieveColumnMonday);
+        tuesdayTaskTable.getColumns().add(retrieveColumnTuesday);
+        wednesdayTaskTable.getColumns().add(retrieveColumnWednesday);
+        thursdayTaskTable.getColumns().add(retrieveColumnThursday);
+        fridayTaskTable.getColumns().add(retrieveColumnFriday);
+        saturdayTaskTable.getColumns().add(retrieveColumnSaturday);
+        
+        // Initialize separate retrieveColumns for each TableView
+        retrieveColumnMonday = createRetrieveColumn();
+        retrieveColumnTuesday = createRetrieveColumn();
+        retrieveColumnWednesday = createRetrieveColumn();
+        retrieveColumnThursday = createRetrieveColumn();
+        retrieveColumnFriday = createRetrieveColumn();
+        retrieveColumnSaturday = createRetrieveColumn();
 
         try {
             showTaskList();
@@ -82,9 +144,75 @@ public class TaskViewController implements Initializable {
 
         UndoButton.setDisable(true);
         RedoButton.setDisable(true);
-
     }
 
+
+    private TableColumn<UserTask, Boolean> createCompletedColumn() {
+    TableColumn<UserTask, Boolean> completedColumn = new TableColumn<>("Completed");
+    completedColumn.setCellValueFactory(cellData -> cellData.getValue().completedProperty());
+
+    completedColumn.setCellFactory(CheckBoxTableCell.forTableColumn(completedColumn));
+    completedColumn.setEditable(true);
+
+    completedColumn.setOnEditCommit(event -> {
+        UserTask task = event.getRowValue();
+        task.setCompleted(event.getNewValue());
+        
+    });
+
+    return completedColumn;
+}
+
+    
+
+// Modify the createRetrieveColumn method to create a new TableColumn
+    // for each TableView
+    private TableColumn<UserTask, String> createRetrieveColumn() {
+        TableColumn<UserTask, String> retrieveColumn = new TableColumn<>("Retrieve");
+        retrieveColumn.setCellValueFactory(new PropertyValueFactory<>("Task"));
+        retrieveColumn.setCellFactory(column -> {
+            return new TableCell<UserTask, String>() {
+                final Button retrieveButton = new Button("Confirm");
+    
+                {
+                    retrieveButton.setOnAction(event -> {
+                        UserTask task = getTableView().getItems().get(getIndex());
+    
+                        // Check if the "Completed" property (checkbox) is selected
+                        if (task.isCompleted()) {
+                            // Implement the logic to retrieve data from the task column
+                            String taskDescription = task.getTask();
+                            System.out.println("Retrieve data for task: " + taskDescription);
+    
+                            // Call the deletetask method to delete the retrieved data
+                            deletetask(task, getTableView());
+                        } else {
+                            // Display a message or take appropriate action if the checkbox is not checked
+                            System.out.println("Checkbox is not checked. Cannot retrieve data.");
+                        }
+                    });
+                }
+    
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(retrieveButton);
+                    }
+                }
+            };
+        });
+    
+        return retrieveColumn;
+    }
+        
+    
+    
+
+
+    // Rest of your code remains the same...
 
 
     public void insertTask() {
@@ -110,6 +238,7 @@ public class TaskViewController implements Initializable {
                 statement.setString(2, userAccount);
                 statement.setString(3, selectedDay);
                 statement.executeUpdate();  
+                
 
                 // Save the current state for possible undo action
                 undoStack.push(new UserTaskMemento(taskInput.getText(), DataStored.username, selectedDay, true));
@@ -207,6 +336,9 @@ public class TaskViewController implements Initializable {
         }
     }
 
+    
+    
+
     private String getDayFromTableView(TableView<UserTask> selectedTableView) {
         if (selectedTableView == mondayTaskTable) {
             return "Monday";
@@ -262,7 +394,7 @@ public class TaskViewController implements Initializable {
 
                     // Check if the task is not already in the list before adding it
                     if (TaskList.stream().noneMatch(task -> task.getTask().equals(memento.getTask()))) {
-                        TaskList.add(new UserTask(memento.getTask(), " "));
+                        TaskList.add(new UserTask(memento.getTask(), " ", false));
                     }
                 }
 
@@ -301,7 +433,7 @@ public class TaskViewController implements Initializable {
                         statement.executeUpdate();
     
                         // Update the TaskList with the newly added task
-                        TaskList.add(new UserTask(memento.getTask(), " "));
+                        TaskList.add(new UserTask(memento.getTask(), " ", false));
                     } else {
                         // If it was originally a delete, delete the task from the database
                         String deleteQuery = "DELETE FROM taskinput WHERE Task = ? AND Username = ? AND Day = ?";
@@ -354,7 +486,7 @@ public class TaskViewController implements Initializable {
             ResultSet result = statement.executeQuery();
             UserTask UT;
             while (result.next()) {
-                UT = new UserTask(result.getString("Task"), result.getString("Day"));
+                UT = new UserTask(result.getString("Task"), result.getString("Day"), false);
                 DataList.add(UT);
             }
             System.out.println("Retrieved " + DataList.size() + " tasks for " + day);
@@ -412,4 +544,3 @@ public class TaskViewController implements Initializable {
    
 
 }
-
