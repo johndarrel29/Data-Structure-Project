@@ -84,6 +84,8 @@ public class TaskViewController implements Initializable {
     Stack<UserTaskMemento> undoStack = new Stack<>();
     Stack<UserTaskMemento> redoStack = new Stack<>();
 
+    private TableColumn<UserTask, ?> doneListColumn;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -136,8 +138,15 @@ public class TaskViewController implements Initializable {
         retrieveColumnFriday = createRetrieveColumn();
         retrieveColumnSaturday = createRetrieveColumn();
 
+        doneListColumn = new TableColumn<>("Done List");
+        doneListColumn.setCellValueFactory(new PropertyValueFactory<>("Task"));
+
+        // Add the "doneList" column to the doneTaskTable
+        doneTaskTable.getColumns().add(doneListColumn);
+
         try {
             showTaskList();
+            loadCompletedTasks();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -177,15 +186,21 @@ public class TaskViewController implements Initializable {
                 {
                     retrieveButton.setOnAction(event -> {
                         UserTask task = getTableView().getItems().get(getIndex());
+                        String day = getSelectedDay(); // Get the selected day
     
                         // Check if the "Completed" property (checkbox) is selected
                         if (task.isCompleted()) {
                             // Implement the logic to retrieve data from the task column
                             String taskDescription = task.getTask();
-                            System.out.println("Retrieve data for task: " + taskDescription);
+                            System.out.println("Retrieve data for task: " + taskDescription + " for day: " + day);
     
-                            // Call the deletetask method to delete the retrieved data
+                            // Move the data to the `completed_tasks` database
+                            moveDataToCompletedTasks(taskDescription, userAccount);
+    
+                            // Call the deletetask method to delete the retrieved data from the `taskinput` table
                             deletetask(task, getTableView());
+                            UndoButton.setDisable(true);
+                            RedoButton.setDisable(true);
                         } else {
                             // Display a message or take appropriate action if the checkbox is not checked
                             System.out.println("Checkbox is not checked. Cannot retrieve data.");
@@ -207,10 +222,93 @@ public class TaskViewController implements Initializable {
     
         return retrieveColumn;
     }
-        
     
-    
+    private void updateDoneTaskTable() {
+        try (Connection connection = Database.DBConnect()) {
+            ObservableList<UserTask> completedTasks = dataCompletedTaskList(connection);
+            doneTaskTable.setItems(completedTasks);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void moveDataToCompletedTasks(String taskDescription, String username) {
+        try (Connection connection = Database.DBConnect()) {
+            connection.setAutoCommit(false); // Set auto-commit to false
+    
+            // First, retrieve the day from the taskinput database
+            String retrieveDayQuery = "SELECT Day FROM taskinput WHERE Task = ? AND Username = ?";
+            PreparedStatement retrieveDayStatement = connection.prepareStatement(retrieveDayQuery);
+            retrieveDayStatement.setString(1, taskDescription);
+            retrieveDayStatement.setString(2, username);
+    
+            ResultSet dayResult = retrieveDayStatement.executeQuery();
+            if (dayResult.next()) {
+                String day = dayResult.getString("Day");
+    
+                // Now, insert the task into the completed_tasks database
+                String insertCompletedTask = "INSERT INTO completed_tasks (Task, Username, Day) VALUES (?, ?, ?)";
+                PreparedStatement statement = connection.prepareStatement(insertCompletedTask);
+                statement.setString(1, taskDescription);
+                statement.setString(2, username);
+                statement.setString(3, day);
+    
+                int rowsAffected = statement.executeUpdate();
+    
+                if (rowsAffected > 0) {
+                    connection.commit(); // Commit the transaction
+                    System.out.println("Data moved to completed_tasks: " + taskDescription + " for day: " + day);
+                    // Update the doneTaskTable
+                    updateDoneTaskTable();
+                } else {
+                    System.out.println("Data was not moved to completed_tasks");
+                }
+            } else {
+                System.out.println("Failed to retrieve day for the task: " + taskDescription);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private String getSelectedDay() {
+        String selectedDay = DaysChoices.getValue(); // Get the selected day
+        if (selectedDay != null && !selectedDay.isEmpty()) {
+            return selectedDay;
+        } else {
+            return "";
+        }
+    }
+
+    // Method to load data from the completed_tasks table
+    private void loadCompletedTasks() throws SQLException {
+        try (Connection connection = Database.DBConnect()) {
+            ObservableList<UserTask> completedTasks = dataCompletedTaskList(connection);
+            doneTaskTable.setItems(completedTasks);
+        }
+    }
+
+    // Retrieve data from the completed_tasks table
+    private ObservableList<UserTask> dataCompletedTaskList(Connection connection) throws SQLException {
+        ObservableList<UserTask> completedTasks = FXCollections.observableArrayList();
+
+        String retrieveData = "SELECT Task FROM completed_tasks WHERE Username = ?";
+        PreparedStatement statement = connection.prepareStatement(retrieveData);
+        statement.setString(1, userAccount);
+
+        ResultSet result = statement.executeQuery();
+
+        while (result.next()) {
+            UserTask task = new UserTask(result.getString("Task"), "Completed", true);
+            completedTasks.add(task);
+        }
+
+        System.out.println("Retrieved " + completedTasks.size() + " completed tasks.");
+
+        return completedTasks;
+    }
+    
+    
 
     // Rest of your code remains the same...
 
