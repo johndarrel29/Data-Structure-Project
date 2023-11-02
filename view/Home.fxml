@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
    <children>
@@ -16,45 +17,53 @@
          <children>
             <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/Homepage.png" />
+                  <Image url="@../images/Page5Ulit.png" />
                </image>
             </ImageView>
-            <ProgressBar fx:id="progressBar" layoutX="153.0" layoutY="441.0" prefHeight="35.0" prefWidth="467.0" progress="0.0" />
-            <ProgressIndicator fx:id="progressIndicator" layoutX="373.0" layoutY="482.0" prefHeight="100.0" prefWidth="65.0" progress="0.0" />
-            <Label fx:id="dateLabel" layoutX="175.0" layoutY="224.0" prefHeight="85.0" prefWidth="218.0" text="date" wrapText="true">
-               <font>
-                  <Font name="Arial Rounded MT Bold" size="32.0" />
-               </font>
-            </Label>
-            <Label layoutX="935.0" layoutY="216.0" prefHeight="93.0" prefWidth="257.0" text="Surname">
+            <ProgressBar fx:id="progressBar" layoutX="90.0" layoutY="447.0" prefHeight="50.0" prefWidth="541.0" progress="0.17" style="-fx-border-radius: 40;" styleClass="progressBar" stylesheets="@../CSS/Styles.css" />
+            <ProgressIndicator fx:id="progressIndicator" layoutX="361.0" layoutY="506.0" prefHeight="55.0" prefWidth="44.0" progress="0.35" styleClass="progressIndicator" stylesheets="@../CSS/Styles.css" />
+            <Label fx:id="lastname_label" layoutX="935.0" layoutY="216.0" prefHeight="93.0" prefWidth="257.0" text="Surname" wrapText="true">
                <font>
                   <Font size="48.0" />
                </font>
             </Label>
-            <Label layoutX="935.0" layoutY="267.0" prefHeight="93.0" prefWidth="257.0" text="First Name, M.I">
+            <Label fx:id="givenname_label" layoutX="935.0" layoutY="267.0" prefHeight="93.0" prefWidth="257.0" text="Given Name" wrapText="true">
                <font>
                   <Font size="30.0" />
                </font>
             </Label>
-            <Label layoutX="987.0" layoutY="360.0" prefHeight="51.0" prefWidth="189.0" text="xxxx-xxxxxx">
+            <Label fx:id="id_label" layoutX="987.0" layoutY="360.0" prefHeight="51.0" prefWidth="189.0" text="xxxx-xxxxxx" wrapText="true">
                <font>
                   <Font size="30.0" />
                </font>
             </Label>
-            <Label layoutX="791.0" layoutY="360.0" prefHeight="51.0" prefWidth="129.0" text="Program">
+            <Label fx:id="program_label" layoutX="791.0" layoutY="360.0" prefHeight="51.0" prefWidth="129.0" text="Program" wrapText="true">
                <font>
                   <Font size="26.0" />
                </font>
             </Label>
-            <Button fx:id="logout_btn" layoutX="1075.0" layoutY="72.0" mnemonicParsing="false" onAction="#logout" opacity="0.0" prefHeight="35.0" prefWidth="94.0" text="Logout" />
-            <Button fx:id="taskButton" layoutX="770.0" layoutY="535.0" mnemonicParsing="false" onAction="#gotoTask" opacity="0.0" prefHeight="40.0" prefWidth="94.0" text="Task" />
-            <Button fx:id="journalButton" layoutX="767.0" layoutY="615.0" mnemonicParsing="false" onAction="#gotoJournal" opacity="0.0" prefHeight="40.0" prefWidth="101.0" text="Journal" />
-            <Button fx:id="accountButton" layoutX="758.0" layoutY="459.0" mnemonicParsing="false" onAction="#toAccount" opacity="0.0" prefHeight="35.0" prefWidth="114.0" text="Account" />
-            <Label fx:id="quoteLabel" layoutX="935.0" layoutY="535.0" prefHeight="85.0" prefWidth="218.0" text="date" wrapText="true">
+            <Button fx:id="logout_btn" layoutX="1079.0" layoutY="72.0" mnemonicParsing="false" onAction="#logout" prefHeight="48.0" prefWidth="112.0" style="-fx-border-radius: 16; -fx-background-radius: 20;" styleClass="logout_btn" stylesheets="@../CSS/Styles.css" text="Logout" />
+            <Button fx:id="taskButton" layoutX="751.0" layoutY="526.0" mnemonicParsing="false" onAction="#gotoTask" prefHeight="60.0" prefWidth="140.0" style="-fx-background-radius: 20; -fx-border-radius: 16;" styleClass="taskButton" stylesheets="@../CSS/Styles.css" text="Task" />
+            <Button fx:id="journalButton" layoutX="751.0" layoutY="597.0" mnemonicParsing="false" onAction="#gotoJournal" prefHeight="60.0" prefWidth="140.0" style="-fx-background-radius: 20; -fx-border-radius: 16;" styleClass="journalButton" stylesheets="@../CSS/Styles.css" text="Journal" />
+            <Button fx:id="accountButton" layoutX="751.0" layoutY="455.0" mnemonicParsing="false" onAction="#toAccount" prefHeight="60.0" prefWidth="140.0" style="-fx-background-radius: 20; -fx-border-radius: 16;" styleClass="accountButton" stylesheets="@../CSS/Styles.css" text="Account">
+               <font>
+                  <Font size="18.0" />
+               </font></Button>
+            <Label fx:id="quoteLabel" layoutX="945.0" layoutY="559.0" prefHeight="75.0" prefWidth="218.0" text="quote" textAlignment="CENTER" textFill="#86aad4" wrapText="true">
                <font>
                   <Font name="Arial Rounded MT Bold" size="14.0" />
                </font>
             </Label>
+            <Text fx:id="displayUsername" fill="#faf3a9" layoutX="359.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-stroke-width: 4; -fx-stroke: #8fafd5;" styleClass="displayUsername" text="Hello, User!" wrappingWidth="470.20452880859375">
+               <font>
+                  <Font size="55.0" />
+               </font>
+            </Text>
+            <Text fx:id="dateLabel" fill="#faf3a9" layoutX="72.0" layoutY="348.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-stroke: #8fafd5; -fx-stroke-width: 4;" styleClass="dateLabel" text="November 01" wrappingWidth="646.443603515625">
+               <font>
+                  <Font size="82.0" />
+               </font>
+            </Text>
          </children>
       </Pane>
    </children>
