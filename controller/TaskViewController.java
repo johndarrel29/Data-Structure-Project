@@ -164,6 +164,8 @@ public class TaskViewController implements Initializable {
         }
 
         progressBar.progressProperty().bind(progressProperty);
+        progressPercentage.progressProperty().bind(progressBar.progressProperty());
+
         
         updateProgressBar();
 
