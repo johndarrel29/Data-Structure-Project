@@ -10,6 +10,9 @@ import java.util.ResourceBundle;
 import java.util.Stack;
 
 import alert.AlertMaker;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,6 +24,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -43,6 +48,12 @@ public class TaskViewController implements Initializable {
 
     @FXML
     private TextArea taskInput;
+
+    @FXML
+    ProgressBar progressBar;
+
+    @FXML
+    ProgressIndicator progressPercentage;
 
     @FXML
     TableView<UserTask> mondayTaskTable, tuesdayTaskTable, wednesdayTaskTable, 
@@ -79,7 +90,8 @@ public class TaskViewController implements Initializable {
     String userAccount = DataStored.username;
     
     ObservableList<UserTask> TaskList;
-    
+
+    private DoubleProperty progressProperty = new SimpleDoubleProperty();
 
     Stack<UserTaskMemento> undoStack = new Stack<>();
     Stack<UserTaskMemento> redoStack = new Stack<>();
@@ -138,7 +150,7 @@ public class TaskViewController implements Initializable {
         retrieveColumnFriday = createRetrieveColumn();
         retrieveColumnSaturday = createRetrieveColumn();
 
-        doneListColumn = new TableColumn<>("Done List");
+        doneListColumn = new TableColumn<>("Completed Task              ");
         doneListColumn.setCellValueFactory(new PropertyValueFactory<>("Task"));
 
         // Add the "doneList" column to the doneTaskTable
@@ -151,10 +163,155 @@ public class TaskViewController implements Initializable {
             e.printStackTrace();
         }
 
+        progressBar.progressProperty().bind(progressProperty);
+        
+        updateProgressBar();
+
         UndoButton.setDisable(true);
         RedoButton.setDisable(true);
     }
 
+    private void updateProgressBar() {
+        int totalCompletedTasks = 0;
+        int totalRemainingTasks = 0;
+    
+        totalCompletedTasks += getCompletedTaskCountFromDatabase("Monday");
+        totalRemainingTasks += getTotalTaskCountFromDatabase("Monday");
+
+    
+        totalCompletedTasks += getCompletedTaskCountFromDatabase("Tuesday");
+        totalRemainingTasks += getTotalTaskCountFromDatabase("Tuesday");
+
+
+        totalCompletedTasks += getCompletedTaskCountFromDatabase("Wednesday");
+        totalRemainingTasks += getTotalTaskCountFromDatabase("Wednesday");
+
+
+        totalCompletedTasks += getCompletedTaskCountFromDatabase("Thursday");
+        totalRemainingTasks += getTotalTaskCountFromDatabase("Thursday");
+
+
+        totalCompletedTasks += getCompletedTaskCountFromDatabase("Friday");
+        totalRemainingTasks += getTotalTaskCountFromDatabase("Friday");
+
+
+        totalCompletedTasks += getCompletedTaskCountFromDatabase("Saturday");
+        totalRemainingTasks += getTotalTaskCountFromDatabase("Saturday");
+
+    
+        
+    
+        if (totalRemainingTasks == 0) {
+            progressProperty.set(1.0);
+        } else {
+            double progress = (double) totalCompletedTasks / (totalCompletedTasks + totalRemainingTasks);
+            System.out.println("Total Completed Tasks: " + totalCompletedTasks);
+            System.out.println("Total Remaining Tasks: " + totalRemainingTasks);
+            System.out.println("Progress: " + progress);
+            progressProperty.set(progress);
+        }
+    }
+    
+
+
+    private int getCompletedTaskCountFromDatabase(String day) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        int completedTaskCount = 0;
+    
+        try {
+            connection = Database.DBConnect();
+            String retrieveData = "SELECT COUNT(*) FROM completed_tasks WHERE Username = ? AND Day = ?";
+            statement = connection.prepareStatement(retrieveData);
+            statement.setString(1, userAccount);
+            statement.setString(2, day);  // Set the day parameter
+            result = statement.executeQuery();
+    
+            if (result.next()) {
+                completedTaskCount = result.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in the reverse order of their creation (result, statement, connection)
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    
+        return completedTaskCount;
+    }
+    
+    private int getTotalTaskCountFromDatabase(String day) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        int totalTaskCount = 0;
+    
+        try {
+            connection = Database.DBConnect();
+            String retrieveData = "SELECT COUNT(*) FROM taskinput WHERE Username = ? AND Day = ?";
+            statement = connection.prepareStatement(retrieveData);
+            statement.setString(1, userAccount);
+            statement.setString(2, day);  // Set the day parameter
+            result = statement.executeQuery();
+    
+            if (result.next()) {
+                totalTaskCount = result.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in the reverse order of their creation (result, statement, connection)
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    
+        return totalTaskCount;
+    }
+
+    
+
+
+//------------------------------FOR COMPLETED TASK----------------------------------
 
     private TableColumn<UserTask, Boolean> createCompletedColumn() {
     TableColumn<UserTask, Boolean> completedColumn = new TableColumn<>("Completed");
@@ -166,16 +323,15 @@ public class TaskViewController implements Initializable {
     completedColumn.setOnEditCommit(event -> {
         UserTask task = event.getRowValue();
         task.setCompleted(event.getNewValue());
-        
+        updateProgressBar();
     });
 
     return completedColumn;
 }
 
-    
 
 // Modify the createRetrieveColumn method to create a new TableColumn
-    // for each TableView
+// for each TableView
     private TableColumn<UserTask, String> createRetrieveColumn() {
         TableColumn<UserTask, String> retrieveColumn = new TableColumn<>("Retrieve");
         retrieveColumn.setCellValueFactory(new PropertyValueFactory<>("Task"));
@@ -199,6 +355,9 @@ public class TaskViewController implements Initializable {
     
                             // Call the deletetask method to delete the retrieved data from the `taskinput` table
                             deletetask(task, getTableView());
+
+                            updateProgressBar();
+
                             UndoButton.setDisable(true);
                             RedoButton.setDisable(true);
                         } else {
@@ -307,7 +466,8 @@ public class TaskViewController implements Initializable {
 
         return completedTasks;
     }
-    
+
+    //---------------------------COMPLETED TASK--------------------------------------
     
 
     // Rest of your code remains the same...
@@ -344,10 +504,12 @@ public class TaskViewController implements Initializable {
                 redoStack.clear();
 
                 showTaskList();
-
               
                 UndoButton.setDisable(false);
                 RedoButton.setDisable(true);
+
+                updateProgressBar();
+
                 }   
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -368,6 +530,8 @@ public class TaskViewController implements Initializable {
             if (selectedTask != null) {
                 // Delete the selected task
                 deletetask(selectedTask, selectedTableView);
+
+                updateProgressBar();
             } else {
                 AlertMaker.showSimpleAlert("Oops!", "Select a task to delete.");
             }
@@ -509,6 +673,8 @@ public class TaskViewController implements Initializable {
 
                 UndoButton.setDisable(undoStack.isEmpty());
                 RedoButton.setDisable(false);
+
+                updateProgressBar();
             }
         }
     }
@@ -558,6 +724,8 @@ public class TaskViewController implements Initializable {
     
                 UndoButton.setDisable(false);
                 RedoButton.setDisable(redoStack.isEmpty());
+
+                updateProgressBar();
             }
         }
     }

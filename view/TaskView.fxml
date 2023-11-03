@@ -2,6 +2,8 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -10,7 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
    <children>
       <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -65,8 +67,10 @@
       <Button fx:id="RedoButton" layoutX="99.0" layoutY="191.0" mnemonicParsing="false" onAction="#redo" text="Redo" />
       <TableView fx:id="doneTaskTable" layoutX="1009.0" layoutY="475.0" prefHeight="154.0" prefWidth="200.0">
         <columns>
-          <TableColumn fx:id="doneList" prefWidth="139.99993896484375" text="C1" />
+          <TableColumn fx:id="doneList" minWidth="0.0" prefWidth="0.0" />
         </columns>
       </TableView>
+      <ProgressIndicator fx:id="progressPercentage" layoutX="491.0" layoutY="652.0" progress="0.0" />
+      <ProgressBar fx:id="progressBar" layoutX="333.0" layoutY="589.0" prefHeight="43.0" prefWidth="623.0" progress="0.0" />
    </children>
 </AnchorPane>

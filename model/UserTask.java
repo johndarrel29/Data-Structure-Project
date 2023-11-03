@@ -14,7 +14,6 @@ public class UserTask {
 
     public UserTask(String task, String day, boolean completed) {
         this.task = task;
-        this.completed = new SimpleBooleanProperty(false); // Default to unchecked
         this.retrieveButton = new Button("Retrieve");
         this.day = day;
         this.completed = new SimpleBooleanProperty(completed);
