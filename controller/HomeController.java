@@ -34,6 +34,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import model.DataStored;
 import model.Database;
+import model.ProgressModel;
+import model.ProgressModelManager;
 import model.StudentID;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -59,9 +61,9 @@ public class HomeController implements Initializable{
     @FXML
     private TextField LastNameField, GivenNameField, StudentIDField, ProgramField;
 
-    private Connection connection;
+    private ProgressModel progressModel;
+    
 
-    private StudentID student = new StudentID();
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
@@ -79,6 +81,16 @@ public class HomeController implements Initializable{
         // taskButton.setFont(customFont4);
         // journalButton.setFont(customFont5);
         // logout_btn.setFont(customFont6);
+
+        progressModel = ProgressModelManager.getSharedProgressModel();
+
+        if (progressModel != null) {
+            progressBar.progressProperty().bind(progressModel.progressProperty());
+            progressIndicator.progressProperty().bind(progressModel.progressProperty());
+        } else {
+            System.out.println("BAT WALANG LAMANG TO");
+        }
+
         setRandomQuote();
         updateDateLabel();
         displayUser();

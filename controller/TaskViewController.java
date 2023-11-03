@@ -35,6 +35,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.DataStored;
 import model.Database;
+import model.ProgressModel;
+import model.ProgressModelManager;
 import model.UserTask;
 import model.UserTaskMemento;
 
@@ -53,7 +55,7 @@ public class TaskViewController implements Initializable {
     ProgressBar progressBar;
 
     @FXML
-    ProgressIndicator progressPercentage;
+    ProgressIndicator progressIndicator;
 
     @FXML
     TableView<UserTask> mondayTaskTable, tuesdayTaskTable, wednesdayTaskTable, 
@@ -97,6 +99,10 @@ public class TaskViewController implements Initializable {
     Stack<UserTaskMemento> redoStack = new Stack<>();
 
     private TableColumn<UserTask, ?> doneListColumn;
+
+    private static ProgressModel progressModel; // Make it a static variable
+
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -163,8 +169,14 @@ public class TaskViewController implements Initializable {
             e.printStackTrace();
         }
 
+
+        progressModel = ProgressModelManager.getSharedProgressModel();
+
+        progressBar.progressProperty().bind(progressModel.progressProperty());
+        progressIndicator.progressProperty().bind(progressModel.progressProperty());
+
         progressBar.progressProperty().bind(progressProperty);
-        progressPercentage.progressProperty().bind(progressBar.progressProperty());
+        progressIndicator.progressProperty().bind(progressBar.progressProperty());
 
         
         updateProgressBar();
@@ -201,16 +213,16 @@ public class TaskViewController implements Initializable {
         totalRemainingTasks += getTotalTaskCountFromDatabase("Saturday");
 
     
-        
-    
         if (totalRemainingTasks == 0) {
             progressProperty.set(1.0);
+            progressModel.setProgress(1.0);
         } else {
             double progress = (double) totalCompletedTasks / (totalCompletedTasks + totalRemainingTasks);
             System.out.println("Total Completed Tasks: " + totalCompletedTasks);
             System.out.println("Total Remaining Tasks: " + totalRemainingTasks);
             System.out.println("Progress: " + progress);
             progressProperty.set(progress);
+            progressModel.setProgress(progress);
         }
     }
     
@@ -311,6 +323,11 @@ public class TaskViewController implements Initializable {
     }
 
     
+    // Getter method to access the progressModel
+    public static ProgressModel getProgressModel() {
+        return progressModel;
+    }
+
 
 
 //------------------------------FOR COMPLETED TASK----------------------------------

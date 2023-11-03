@@ -15,7 +15,7 @@ public class App extends Application {
     }
 
     public void start(Stage stage) throws Exception {
-
+        
         try {
 
             //Image image = new Image("/images/logo.jpg");

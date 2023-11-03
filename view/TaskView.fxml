@@ -70,7 +70,7 @@
           <TableColumn fx:id="doneList" minWidth="0.0" prefWidth="0.0" />
         </columns>
       </TableView>
-      <ProgressIndicator fx:id="progressPercentage" layoutX="491.0" layoutY="652.0" progress="0.0" />
+      <ProgressIndicator fx:id="progressIndicator" layoutX="491.0" layoutY="652.0" progress="0.0" />
       <ProgressBar fx:id="progressBar" layoutX="333.0" layoutY="589.0" prefHeight="43.0" prefWidth="623.0" progress="0.0" />
    </children>
 </AnchorPane>
