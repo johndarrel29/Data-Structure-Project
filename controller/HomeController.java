@@ -18,6 +18,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -62,6 +65,8 @@ public class HomeController implements Initializable{
     private TextField LastNameField, GivenNameField, StudentIDField, ProgramField;
 
     private ProgressModel progressModel;
+
+    private DoubleProperty progressProperty = new SimpleDoubleProperty();
     
 
 
@@ -266,6 +271,9 @@ public StudentID getStudentData() {
     public void logout(ActionEvent event)throws IOException{
 
         System.out.println("Logout method called");
+
+        progressProperty.set(0);
+        progressModel.setProgress(0);
 
         Stage stage = (Stage) (((Node) event.getSource()).getScene().getWindow());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SignIn.fxml"));

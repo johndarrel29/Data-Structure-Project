@@ -46,7 +46,7 @@ public class TaskViewController implements Initializable {
     private ChoiceBox<String> DaysChoices;
 
     @FXML
-    private Button InserttaskButton, homeButton, journalButton, UndoButton, RedoButton, deleteButton;
+    private Button InserttaskButton, homeButton, journalButton, UndoButton, RedoButton, deleteButton, weeklyDone;
 
     @FXML
     private TextArea taskInput;
@@ -213,9 +213,9 @@ public class TaskViewController implements Initializable {
         totalRemainingTasks += getTotalTaskCountFromDatabase("Saturday");
 
     
-        if (totalRemainingTasks == 0) {
-            progressProperty.set(1.0);
-            progressModel.setProgress(1.0);
+        if (totalCompletedTasks == 0 && totalRemainingTasks == 0) {
+            progressProperty.set(0);
+            progressModel.setProgress(0);
         } else {
             double progress = (double) totalCompletedTasks / (totalCompletedTasks + totalRemainingTasks);
             System.out.println("Total Completed Tasks: " + totalCompletedTasks);
@@ -328,6 +328,34 @@ public class TaskViewController implements Initializable {
         return progressModel;
     }
 
+
+
+
+    public void refreshTableAndResetProgress() {
+        deleteCompletedTasksForCurrentWeek();
+        resetProgressBar(); 
+        doneTaskTable.getItems().clear();
+    }
+    
+
+    public void deleteCompletedTasksForCurrentWeek() {
+        try (Connection connection = Database.DBConnect()) {
+            String deleteQuery = "DELETE FROM completed_tasks WHERE Username = ? AND Day IN " +
+                "('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')";
+            PreparedStatement statement = connection.prepareStatement(deleteQuery);
+            statement.setString(1, userAccount);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void resetProgressBar() {
+        progressProperty.set(0);
+        progressModel.setProgress(0);
+    }
+
+    
 
 
 //------------------------------FOR COMPLETED TASK----------------------------------
