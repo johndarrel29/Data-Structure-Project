@@ -1,25 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="displayUsername2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.JournalController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
    <children>
-      <TextArea fx:id="journal_Input" layoutX="54.0" layoutY="69.0" prefHeight="230.0" prefWidth="222.0" />
-      <TableView fx:id="displayJournalTable" layoutX="319.0" layoutY="69.0" prefHeight="230.0" prefWidth="234.0">
+      <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/TaskView.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="journalButton" layoutX="896.0" layoutY="69.0" mnemonicParsing="false" onAction="#toJournal" opacity="0.0" prefHeight="43.0" prefWidth="109.0" text="Journal" />
+      <Button fx:id="homeButton" layoutX="1062.0" layoutY="63.0" mnemonicParsing="false" onAction="#toHomePage" prefHeight="56.0" prefWidth="109.0" text="Home" />
+      <Pane layoutX="977.0" layoutY="161.0" prefHeight="200.0" prefWidth="263.0">
+         <children>
+            <Button fx:id="InserttaskButton" layoutX="33.0" layoutY="124.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="34.0" prefWidth="81.0" text="Insert" />
+            <ChoiceBox fx:id="DaysChoices" layoutX="33.0" layoutY="83.0" prefHeight="34.0" prefWidth="183.0" />
+            <TextArea fx:id="taskInput" layoutX="24.0" layoutY="36.0" prefHeight="43.0" prefWidth="200.0" promptText="input task" />
+            <Button fx:id="deleteButton" layoutX="132.0" layoutY="124.0" mnemonicParsing="false" onAction="#deleteSelectedTask" prefHeight="34.0" prefWidth="81.0" text="Delete" />
+         </children>
+      </Pane>
+      <Pane layoutX="41.0" layoutY="291.0" prefHeight="261.0" prefWidth="871.0">
+         <children>
+            <TableView fx:id="mondayTaskTable" layoutX="14.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+              <columns>
+                <TableColumn fx:id="Monday" prefWidth="76.0" text="Task" />
+              </columns>
+            </TableView>
+            <TableView fx:id="tuesdayTaskTable" layoutX="162.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Tuesday" prefWidth="70.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="wednesdayTaskTable" layoutX="312.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Wednesday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="thursdayTaskTable" layoutX="462.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Thursday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="fridayTaskTable" layoutX="606.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Friday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="saturdayTaskTable" layoutX="749.0" layoutY="31.0" prefHeight="200.0" prefWidth="120.0">
+               <columns>
+                  <TableColumn fx:id="Saturday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+         </children>
+      </Pane>
+      <Button fx:id="UndoButton" layoutX="47.0" layoutY="191.0" mnemonicParsing="false" onAction="#undo" text="Undo" />
+      <Button fx:id="RedoButton" layoutX="99.0" layoutY="191.0" mnemonicParsing="false" onAction="#redo" text="Redo" />
+      <TableView fx:id="doneTaskTable" layoutX="1009.0" layoutY="475.0" prefHeight="154.0" prefWidth="200.0">
         <columns>
-          <TableColumn fx:id="userJournalList" prefWidth="185.5999755859375" text="User Journal" />
+          <TableColumn fx:id="doneList" prefWidth="139.99993896484375" text="C1" />
         </columns>
       </TableView>
-      <Button fx:id="journalButton" layoutX="91.0" layoutY="326.0" mnemonicParsing="false" onAction="#insertJournal" text="Add" />
-      <Button fx:id="delJournalButton" layoutX="174.0" layoutY="326.0" mnemonicParsing="false" onAction="#deleteJournal" text="Delete" />
-      <Label fx:id="displayUsername1" layoutX="54.0" layoutY="31.0" text="Label" />
-      <Button fx:id="UndoButton1" layoutX="122.0" layoutY="27.0" mnemonicParsing="false" onAction="#undo1" text="Undo" />
-      <Button fx:id="RedoButton1" layoutX="183.0" layoutY="27.0" mnemonicParsing="false" onAction="#redo1" text="Redo" />
-      <Button fx:id="toTask" layoutX="513.0" layoutY="27.0" mnemonicParsing="false" onAction="#ToTask" text="To task" />
    </children>
 </AnchorPane>
