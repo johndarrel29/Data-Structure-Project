@@ -30,8 +30,11 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.DataStored;
 import model.Database;
@@ -49,7 +52,10 @@ public class TaskViewController implements Initializable {
     private Button InserttaskButton, homeButton, journalButton, UndoButton, RedoButton, deleteButton, weeklyDone;
 
     @FXML
-    private TextArea taskInput;
+    private TextField taskInput;
+
+    @FXML
+    private Text completed_tasks;
 
     @FXML
     ProgressBar progressBar;
@@ -106,6 +112,10 @@ public class TaskViewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+    Font customFont11 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 17);
+    completed_tasks.setFont(customFont11);
+
 
         ObservableList<String> daysOfWeek = FXCollections.observableArrayList(
             "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"

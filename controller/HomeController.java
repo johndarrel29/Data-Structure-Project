@@ -19,6 +19,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
@@ -33,8 +38,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import model.DataStored;
 import model.Database;
 import model.ProgressModel;
@@ -42,6 +49,7 @@ import model.ProgressModelManager;
 import model.StudentID;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 
 
 public class HomeController implements Initializable{
@@ -60,33 +68,71 @@ public class HomeController implements Initializable{
 
     @FXML
     private Text displayUsername, dateLabel;
+    
+    @FXML
+    private ImageView animatedLogo;
+    
+    private RotateTransition rotateTransition;
+    private Timeline logoFlipTimeline;
 
     @FXML
     private TextField LastNameField, GivenNameField, StudentIDField, ProgramField;
 
+    private Connection connection;
+
+    private StudentID student = new StudentID();
+
     private ProgressModel progressModel;
 
     private DoubleProperty progressProperty = new SimpleDoubleProperty();
-    
-
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
     
-        // Font customFont = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 82);
-        // Font customFont2 = Font.loadFont(getClass().getResource("/fonts/Shrikhand-Regular.ttf").toExternalForm(), 57);
-        // Font customFont3 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 20);
-        // Font customFont4 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 20);
-        // Font customFont5 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 20);
-        // Font customFont6 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 20);
+        Font customFont = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 82);
+        Font customFont2 = Font.loadFont(getClass().getResource("/fonts/Shrikhand-Regular.ttf").toExternalForm(), 57);
+        Font customFont3 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 20);
+        Font customFont4 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 20);
+        Font customFont5 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 20);
+        Font customFont6 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 20);
+        Font customFont7 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 48);
+        Font customFont8 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 30);
+        Font customFont9 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 25);
+        Font customFont10 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 25);
+        
        
-        // dateLabel.setFont(customFont);
-        // displayUsername.setFont(customFont2);
-        // accountButton.setFont(customFont3);
-        // taskButton.setFont(customFont4);
-        // journalButton.setFont(customFont5);
-        // logout_btn.setFont(customFont6);
+        dateLabel.setFont(customFont);
+        displayUsername.setFont(customFont2);
+        accountButton.setFont(customFont3);
+        taskButton.setFont(customFont4);
+        journalButton.setFont(customFont5);
+        logout_btn.setFont(customFont6);
+        lastname_label.setFont(customFont7);
+        givenname_label.setFont(customFont8);
+        program_label.setFont(customFont9);
+        id_label.setFont(customFont10);
+        setRandomQuote();
+        updateDateLabel();
+        displayUser();
 
+
+// Animation---------------------------------------
+        rotateTransition = new RotateTransition(Duration.seconds(2), animatedLogo);
+        rotateTransition.setAxis(Rotate.Y_AXIS); 
+        rotateTransition.setFromAngle(0);
+        rotateTransition.setToAngle(180);
+
+        logoFlipTimeline = new Timeline(
+            new KeyFrame(Duration.seconds(0), new KeyValue(animatedLogo.rotateProperty(), 0)),
+            new KeyFrame(Duration.seconds(5), event -> {
+               rotateTransition.playFromStart();
+            })
+        );
+        logoFlipTimeline.setCycleCount(Timeline.INDEFINITE);
+        logoFlipTimeline.play();
+
+
+// prog bar -----------------------------
         progressModel = ProgressModelManager.getSharedProgressModel();
 
         if (progressModel != null) {
@@ -96,15 +142,14 @@ public class HomeController implements Initializable{
             System.out.println("BAT WALANG LAMANG TO");
         }
 
-        setRandomQuote();
-        updateDateLabel();
-        displayUser();
-    
-        
+
     }
 
+        
     
 
+
+    
 
 //-------Display user---------------
 
@@ -271,9 +316,6 @@ public StudentID getStudentData() {
     public void logout(ActionEvent event)throws IOException{
 
         System.out.println("Logout method called");
-
-        progressProperty.set(0);
-        progressModel.setProgress(0);
 
         Stage stage = (Stage) (((Node) event.getSource()).getScene().getWindow());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SignIn.fxml"));
