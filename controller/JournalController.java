@@ -18,8 +18,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-// import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,25 +29,23 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.DataStored;
 import model.Database;
 import model.UserJournal;
 import model.UserJournalMemento;
 
-
-
 public class JournalController implements Initializable {
 
-
     @FXML
-    Button journalButton, delJournalButton, UndoButton1, RedoButton1, toTask;
+    Button journalButton, delJournalButton, UndoButton1, RedoButton1, toTask, seeMoreButton;
 
     @FXML
     Label displayUsername1;
 
     @FXML
-    TextArea journal_Input;
+    TextArea journal_Input, journalTitle_Input;
 
     @FXML
     TableView<UserJournal> displayJournalTable;
@@ -59,18 +57,14 @@ public class JournalController implements Initializable {
 
     Stack<UserJournalMemento> undoStack = new Stack<>();
     Stack<UserJournalMemento> redoStack = new Stack<>();
-    
 
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
     private Statement statement;
 
-
-    //ready for designing
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         displayUser();
         myJournalShowData();
         
@@ -80,192 +74,185 @@ public class JournalController implements Initializable {
             e.printStackTrace();
         }
 
-
         UndoButton1.setDisable(true);
         RedoButton1.setDisable(true);
     }
 
-    //----------------------------METHODS for display------------------------------------------
-    
-    public void displayUser(){
-        //display user
+    public void displayUser() {
         String user = DataStored.username;
         displayUsername1.setText(user.substring(0, 1).toUpperCase() + user.substring(1));
-        
     }
 
-    
-    public void showJournalList() throws SQLException{
+    public void showJournalList() throws SQLException {
         JournalList = dataJournalList();
-
-        userJournalList.setCellValueFactory(new PropertyValueFactory<UserJournal, String>("JournalText"));
+        userJournalList.setCellValueFactory(new PropertyValueFactory<>("title"));
         displayJournalTable.setItems(JournalList);
     }
 
-
-    //---------------------------------------------------------------------------------------
-
-
-    //gumana na..pwede na ulit mag input si user paulit ulit
-    public void insertJournal()throws SQLException{
+    public void insertJournal() throws SQLException {
         connect = Database.DBConnect();
-        // statement = connect.createStatement();
-        String JournalText = journal_Input.getText();
+        String journalText = journal_Input.getText();
+        String title = journalTitle_Input.getText();
         String username = DataStored.username;
 
-        if (isDuplicateJournal(JournalText, username)) {
-            // Display an alert if duplication is found
-            AlertMaker.showSimpleAlert("Duplicate Entry", "This journal entry already exists.");
-        } else { 
-        String insertJournal = "INSERT INTO journal ( JournalText, Username) VALUES (?,?)";
-        try(PreparedStatement preparedStatement = connect.prepareStatement(insertJournal)){
-            // preparedStatement.setString(1, "YourTaskValue");
-            preparedStatement.setString(1, JournalText);
-            preparedStatement.setString(2, username);
+        if (journalText.isEmpty() || title.isEmpty()) {
+            AlertMaker.showSimpleAlert("Empty Fields", "Both Title and Journal Text are required.");
+            return;
+        }
+    
+        String insertJournal = "INSERT INTO journal (JournalText, Title, Username) VALUES (?,?,?)";
+        try (PreparedStatement preparedStatement = connect.prepareStatement(insertJournal)) {
+            preparedStatement.setString(1, journalText);
+            preparedStatement.setString(2, title);
+            preparedStatement.setString(3, username);
             preparedStatement.executeUpdate();
-        
+    
             showJournalList();
             myJournalShowData();
-
-            //save the current state for possible undo action
-            undoStack.push(new UserJournalMemento(JournalText));
-
-            //clear the redo stack, as a new action is performed
+    
+            undoStack.push(new UserJournalMemento(journalText, insertJournal, title, username));
             redoStack.clear();
-
-            
-
-            // Enable the "Undo" button when a new task is inserted
+    
             UndoButton1.setDisable(false);
-            // Disable the "Redo" button when a new action is performed
             RedoButton1.setDisable(true);
-            
-
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-    }
-
-    private boolean isDuplicateJournal(String journalText, String username) throws SQLException {
-        String query = "SELECT COUNT(*) FROM journal WHERE JournalText = ? AND Username = ?";
-        try (PreparedStatement preparedStatement = connect.prepareStatement(query)) {
-            preparedStatement.setString(1, journalText);
-            preparedStatement.setString(2, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return resultSet.getInt(1) > 0;
         }
     }
 
     public void deleteJournal(ActionEvent event) throws SQLException {
         UserJournal selectedJournal = displayJournalTable.getSelectionModel().getSelectedItem();
-        
+    
         if (selectedJournal != null) {
             connect = Database.DBConnect();
             statement = connect.createStatement();
-            
-            String deleteQuery = "DELETE FROM journal WHERE JournalText = '" + selectedJournal.getJournalText() + "'";
-            
-            try {
-                statement.executeUpdate(deleteQuery);
-                showJournalList(); 
+    
+            String deleteQuery = "DELETE FROM journal WHERE Title = ? AND JournalText = ? AND Username = ?"; // Include Username
+    
+            try (PreparedStatement preparedStatement = connect.prepareStatement(deleteQuery)) {
+                preparedStatement.setString(1, selectedJournal.getTitle());
+                preparedStatement.setString(2, selectedJournal.getJournalText());
+                preparedStatement.setString(3, DataStored.username); // Set the username
+                preparedStatement.executeUpdate();
+                showJournalList();
+    
+                // Push the deleted journal entry into the undoStack
+                undoStack.push(new UserJournalMemento(selectedJournal.getJournalText(), selectedJournal.getTitle(), DataStored.username, deleteQuery));
+    
+                // Clear the redo stack
+                redoStack.clear();
+    
+                // Enable the "Undo" button
+                UndoButton1.setDisable(false);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } else {
-            AlertMaker.showSimpleAlert("Ooops!", "Select a text to delete.");
+            AlertMaker.showSimpleAlert("Ooops!", "Select a journal to delete.");
         }
-
+    
         myJournalShowData();
     }
-
-    //undo for task
+    
+    
     public void undo1() throws SQLException {
         if (!undoStack.isEmpty()) {
             UserJournalMemento memento = undoStack.pop();
             redoStack.push(memento);
     
-            //Delete the task from the database
             connect = Database.DBConnect();
             statement = connect.createStatement();
-            String deleteQuery = "DELETE FROM journal WHERE JournalText = '" + memento.getJournal() + "'";
-            statement.executeUpdate(deleteQuery);
-
-            // Remove the task from TaskList.
-            JournalList.removeIf(journal -> journal.getJournalText().equals(memento.getJournal()));
-
-            // Refresh the table view.
-            displayJournalTable.refresh();
-
-            // Disable the "Undo" button when the undoStack is empty
-            UndoButton1.setDisable(undoStack.isEmpty());
-
-            // Enable the "Redo" button when an undo is performed
-            RedoButton1.setDisable(false);
-
-            myJournalShowData();
+            String deleteQuery = "DELETE FROM journal WHERE Title = ? AND JournalText = ?";
+            
+            try (PreparedStatement preparedStatement = connect.prepareStatement(deleteQuery)) {
+                preparedStatement.setString(1, memento.getTitle());
+                preparedStatement.setString(2, memento.getJournal());
+                preparedStatement.executeUpdate();
+    
+                JournalList.removeIf(journal -> 
+                    journal.getTitle().equals(memento.getTitle()) &&
+                    journal.getJournalText().equals(memento.getJournal())
+                );
+    
+                displayJournalTable.refresh();
+                UndoButton1.setDisable(undoStack.isEmpty());
+                RedoButton1.setDisable(false);
+                myJournalShowData();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+    
 
-    //redo for task
-    public void redo1()throws SQLException {
+    public void redo1() throws SQLException {
         if (!redoStack.isEmpty()) {
             UserJournalMemento memento = redoStack.pop();
             undoStack.push(memento);
-            
-            // Insert the task into the database.
+    
             connect = Database.DBConnect();
-            statement = connect.createStatement();
-            String insertQuery = "INSERT INTO journal (journalText, Username) VALUES ('" + memento.getJournal() + "', '" + DataStored.username + "')";
-            statement.executeUpdate(insertQuery);
-    
-            // Update the TaskList.
-            JournalList.add(new UserJournal(memento.getJournal()));
-    
-            // Refresh the table view.
-            displayJournalTable.refresh();
-
-            // Enable the "Undo" button when a redo is performed
-            UndoButton1.setDisable(false);
-
-            // Disable the "Redo" button when the redoStack is empty
-            RedoButton1.setDisable(redoStack.isEmpty());
+            String insertQuery = "INSERT INTO journal (Title, Username, JournalText) VALUES (?, ?, ?)";
             
-            myJournalShowData();
+            try (PreparedStatement preparedStatement = connect.prepareStatement(insertQuery)) {
+                preparedStatement.setString(1, memento.getTitle());  // Set the 'Title' from the memento
+                preparedStatement.setString(2, DataStored.username);
+                preparedStatement.setString(3, memento.getJournal());
+                preparedStatement.executeUpdate();
+    
+                JournalList.add(new UserJournal(memento.getTitle(), memento.getJournal(), insertQuery));
+                displayJournalTable.refresh();
+    
+                UndoButton1.setDisable(false);
+                RedoButton1.setDisable(redoStack.isEmpty());
+                myJournalShowData();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+    
 
+    public void seeMore(ActionEvent event) {
+    UserJournal selectedJournal = displayJournalTable.getSelectionModel().getSelectedItem();
 
-    //Retrieval of data from xampp
+    if (selectedJournal != null) {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle(selectedJournal.getTitle());
+
+        TextArea textArea = new TextArea(selectedJournal.getJournalText());
+        textArea.setWrapText(true);
+        textArea.setEditable(false);
+
+        Scene scene = new Scene(new Group(textArea), 400, 300);
+        popupStage.setScene(scene);
+        popupStage.show();
+    } else {
+        AlertMaker.showSimpleAlert("Ooops!", "Select a title to view the journal text.");
+    }
+}
+
     public ObservableList<UserJournal> dataJournalList() {
         ObservableList<UserJournal> dataList = FXCollections.observableArrayList();
-        
-        String retrieveData = "SELECT * FROM journal WHERE Username = '" + DataStored.username + "'";
-        
+        String retrieveData = "SELECT JournalText, Title FROM journal WHERE Username = ?";
         connect = Database.DBConnect();
-        
-        try {
-            prepare = connect.prepareStatement(retrieveData);
-            result = prepare.executeQuery();
-        
-            UserJournal UJ;
-        
+        try (PreparedStatement preparedStatement = connect.prepareStatement(retrieveData)) {
+            preparedStatement.setString(1, DataStored.username);
+            result = preparedStatement.executeQuery();
             while (result.next()) {
-                UJ = new UserJournal(result.getString("JournalText")); // Use "JournalText" here
-        
-                dataList.add(UJ);
+                String title = result.getString("Title");
+                String journalText = result.getString("JournalText");
+                System.out.println("Title: " + title); // Add this debug print statement
+                UserJournal userJournal = new UserJournal(journalText, title, journalText);
+                dataList.add(userJournal);
             }
-        
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        
         return dataList;
     }
 
     public void ToTask(ActionEvent event) throws IOException {
-
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Home.fxml"));
         Parent root = loader.load();
@@ -273,24 +260,30 @@ public class JournalController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-    
-    
+
+    public void toHome(ActionEvent event) throws IOException {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Home.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void toTaskView(ActionEvent event) throws IOException {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/TaskView.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     private ObservableList<UserJournal> myJournalData;
 
     public void myJournalShowData() {
         myJournalData = dataJournalList();
-    
-        userJournalList.setCellValueFactory(new PropertyValueFactory<>("journalText"));
-    
+        userJournalList.setCellValueFactory(new PropertyValueFactory<>("title"));
         displayJournalTable.setItems(myJournalData);
     }
-    
-
-    
-    
-
-
-    
-
 }
