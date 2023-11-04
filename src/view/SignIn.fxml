@@ -30,7 +30,7 @@
                      <font>
                         <Font name="Arial Rounded MT Bold" size="19.0" />
                      </font></Button>
-                  <Hyperlink fx:id="goToSignup" layoutX="132.0" layoutY="305.0" onAction="#switchPane" prefHeight="22.0" prefWidth="150.0" text="Don't have an account?" textAlignment="CENTER">
+                  <Hyperlink fx:id="goToSignup" layoutX="148.0" layoutY="301.0" onAction="#switchPane" prefHeight="22.0" prefWidth="121.0" text="Don't have an account?" textAlignment="CENTER">
                      <font>
                         <Font size="11.0" />
                      </font></Hyperlink>
@@ -53,7 +53,7 @@
                         <Font name="Arial Rounded MT Bold" size="13.0" />
                      </font></TextField>
                   <Button fx:id="createAccountButton" layoutX="131.0" layoutY="248.0" mnemonicParsing="false" onAction="#signup" prefHeight="40.0" prefWidth="150.0" style="-fx-font-family: Arial Rounded MT Bold;" styleClass="createAccountButton" stylesheets="@../CSS/Styles.css" text="Create Account" />
-                  <Hyperlink fx:id="goToLogin" layoutX="147.0" layoutY="305.0" onAction="#switchPane" prefHeight="22.0" prefWidth="150.0" text="Already have an account?">
+                  <Hyperlink fx:id="goToLogin" alignment="CENTER" layoutX="135.0" layoutY="301.0" onAction="#switchPane" prefHeight="22.0" prefWidth="150.0" text="Already have an account?">
                      <font>
                         <Font size="11.0" />
                      </font></Hyperlink>
