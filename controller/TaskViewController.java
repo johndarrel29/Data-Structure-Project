@@ -52,7 +52,7 @@ public class TaskViewController implements Initializable {
     private Button InserttaskButton, homeButton, journalButton, UndoButton, RedoButton, deleteButton, weeklyDone;
 
     @FXML
-    private TextField taskInput;
+    private TextArea taskInput;
 
     @FXML
     private Text completed_tasks;
@@ -113,8 +113,8 @@ public class TaskViewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-    Font customFont11 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 17);
-    completed_tasks.setFont(customFont11);
+    // Font customFont11 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 17);
+    // completed_tasks.setFont(customFont11);
 
 
         ObservableList<String> daysOfWeek = FXCollections.observableArrayList(

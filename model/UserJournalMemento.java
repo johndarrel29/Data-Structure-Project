@@ -3,13 +3,14 @@ package model;
 public class UserJournalMemento{
     private String journal;
     private String title;
+    private String account;
+    private boolean isInsert;
 
-    public UserJournalMemento(String title, String journal) {
+    public UserJournalMemento(String title, String journal, String account, boolean isInsert) {
         this.journal = journal;
         this.title = title;
-    }
-
-    public UserJournalMemento(String journalText, String insertJournal, String title, String username) {
+        this.account = account;
+        this.isInsert = isInsert;
     }
 
    
@@ -19,7 +20,15 @@ public class UserJournalMemento{
     }
 
     public String getTitle() {
-        return null;
+        return title;
+    }
+
+    public boolean isInsert() {
+        return isInsert;
+    }
+
+    public String getAccount(){
+        return account;
     }
 
     
