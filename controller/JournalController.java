@@ -35,8 +35,7 @@ import model.DataStored;
 import model.Database;
 import model.UserJournal;
 import model.UserJournalMemento;
-import model.UserTask;
-import model.UserTaskMemento;
+
 
 public class JournalController implements Initializable {
 
@@ -53,7 +52,7 @@ public class JournalController implements Initializable {
     TableView<UserJournal> displayJournalTable;
 
     @FXML
-    TableColumn<UserJournal, String> userJournalList, userJournalText;
+    TableColumn<UserJournal, String> userJournalList;
 
     ObservableList<UserJournal> JournalList;
 
@@ -87,40 +86,10 @@ public class JournalController implements Initializable {
     public void showJournalList() throws SQLException {
         JournalList = dataJournalList();
         userJournalList.setCellValueFactory(new PropertyValueFactory<UserJournal, String>("Title"));
-        userJournalText.setCellValueFactory(new PropertyValueFactory<UserJournal, String>("JournalText"));
         displayJournalTable.setItems(JournalList);
     }
 
-    // public void insertJournal() throws SQLException {
-    //     connect = Database.DBConnect();
-    //     String journalText = journal_Input.getText();
-    //     String title = journalTitle_Input.getText();
-    //     String username = DataStored.username;
 
-    //     if (journalText.isEmpty() || title.isEmpty()) {
-    //         AlertMaker.showSimpleAlert("Empty Fields", "Both Title and Journal Text are required.");
-    //         return;
-    //     }
-    
-    //     String insertJournal = "INSERT INTO journal (JournalText, Title, Username) VALUES (?,?,?)";
-    //     try (PreparedStatement preparedStatement = connect.prepareStatement(insertJournal)) {
-    //         preparedStatement.setString(1, journalText);
-    //         preparedStatement.setString(2, title);
-    //         preparedStatement.setString(3, username);
-    //         preparedStatement.executeUpdate();
-    
-    //         showJournalList();
-    //         myJournalShowData();
-    
-    //         undoStack.push(new UserJournalMemento(journalText, insertJournal, title, username));
-    //         redoStack.clear();
-    
-    //         UndoButton1.setDisable(false);
-    //         RedoButton1.setDisable(true);
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
 
     public void insertJournal() {
     String title = journalTitle_Input.getText().trim(); 
@@ -164,40 +133,6 @@ public class JournalController implements Initializable {
         }
     }
 
-
-    // public void deleteJournal(ActionEvent event) throws SQLException {
-    //     UserJournal selectedJournal = displayJournalTable.getSelectionModel().getSelectedItem();
-    
-    //     if (selectedJournal != null) {
-    //         connect = Database.DBConnect();
-    //         statement = connect.createStatement();
-    
-    //         String deleteQuery = "DELETE FROM journal WHERE Title = ? AND JournalText = ? AND Username = ?"; // Include Username
-    
-    //         try (PreparedStatement preparedStatement = connect.prepareStatement(deleteQuery)) {
-    //             preparedStatement.setString(1, selectedJournal.getTitle());
-    //             preparedStatement.setString(2, selectedJournal.getJournalText());
-    //             preparedStatement.setString(3, DataStored.username); // Set the username
-    //             preparedStatement.executeUpdate();
-    //             showJournalList();
-    
-    //             // Push the deleted journal entry into the undoStack
-    //             undoStack.push(new UserJournalMemento(selectedJournal.getJournalText(), selectedJournal.getTitle(), DataStored.username, deleteQuery));
-    
-    //             // Clear the redo stack
-    //             redoStack.clear();
-    
-    //             // Enable the "Undo" button
-    //             UndoButton1.setDisable(false);
-    //         } catch (SQLException e) {
-    //             e.printStackTrace();
-    //         }
-    //     } else {
-    //         AlertMaker.showSimpleAlert("Ooops!", "Select a journal to delete.");
-    //     }
-    
-    //     myJournalShowData();
-    // }
 
     public void deleteJournal()throws SQLException{
         UserJournal selectedJournal = displayJournalTable.getSelectionModel().getSelectedItem();
@@ -244,35 +179,7 @@ public class JournalController implements Initializable {
         
     }
     
-    
-    // public void undo1() throws SQLException {
-    //     if (!undoStack.isEmpty()) {
-    //         UserJournalMemento memento = undoStack.pop();
-    //         redoStack.push(memento);
-    
-    //         connect = Database.DBConnect();
-    //         statement = connect.createStatement();
-    //         String deleteQuery = "DELETE FROM journal WHERE Title = ? AND JournalText = ?";
-            
-    //         try (PreparedStatement preparedStatement = connect.prepareStatement(deleteQuery)) {
-    //             preparedStatement.setString(1, memento.getTitle());
-    //             preparedStatement.setString(2, memento.getJournal());
-    //             preparedStatement.executeUpdate();
-    
-    //             JournalList.removeIf(journal -> 
-    //                 journal.getTitle().equals(memento.getTitle()) &&
-    //                 journal.getJournalText().equals(memento.getJournal())
-    //             );
-    
-    //             displayJournalTable.refresh();
-    //             UndoButton1.setDisable(undoStack.isEmpty());
-    //             RedoButton1.setDisable(false);
-    //             showJournalList();
-    //         } catch (SQLException e) {
-    //             e.printStackTrace();
-    //         }
-    //     }
-    // }
+
 
     public void undo1() throws SQLException {
         if (!undoStack.isEmpty()) {
@@ -319,33 +226,6 @@ public class JournalController implements Initializable {
             }
         }
     }
-    
-
-    // public void redo1() throws SQLException {
-    //     if (!redoStack.isEmpty()) {
-    //         UserJournalMemento memento = redoStack.pop();
-    //         undoStack.push(memento);
-    
-    //         connect = Database.DBConnect();
-    //         String insertQuery = "INSERT INTO journal (Title, Username, JournalText) VALUES (?, ?, ?)";
-            
-    //         try (PreparedStatement preparedStatement = connect.prepareStatement(insertQuery)) {
-    //             preparedStatement.setString(1, memento.getTitle());  // Set the 'Title' from the memento
-    //             preparedStatement.setString(2, DataStored.username);
-    //             preparedStatement.setString(3, memento.getJournal());
-    //             preparedStatement.executeUpdate();
-    
-    //             JournalList.add(new UserJournal(memento.getTitle(), memento.getJournal(), insertQuery));
-    //             displayJournalTable.refresh();
-    
-    //             UndoButton1.setDisable(false);
-    //             RedoButton1.setDisable(redoStack.isEmpty());
-    //             myJournalShowData();
-    //         } catch (SQLException e) {
-    //             e.printStackTrace();
-    //         }
-    //     }
-    // }
 
     public void redo1() throws SQLException {
         if (!redoStack.isEmpty()) {
@@ -402,10 +282,11 @@ public class JournalController implements Initializable {
         popupStage.setTitle(selectedJournal.getTitle());
 
         TextArea textArea = new TextArea(selectedJournal.getJournalText());
+        textArea.setMinSize(400, 300);
         textArea.setWrapText(true);
         textArea.setEditable(false);
 
-        Scene scene = new Scene(new Group(textArea), 400, 300);
+        Scene scene = new Scene(new Group(textArea));
         popupStage.setScene(scene);
         popupStage.show();
     } else {
@@ -424,8 +305,8 @@ public class JournalController implements Initializable {
             while (result.next()) {
                 String title = result.getString("Title");
                 String journalText = result.getString("JournalText");
-                System.out.println("Title: " + title); // Add this debug print statement
-                System.out.println("Text: " + journalText);
+                // System.out.println("Title: " + title); // Add this debug print statement
+                // System.out.println("Text: " + journalText);
                 UserJournal userJournal = new UserJournal(journalText, title, false);
                 dataList.add(userJournal);
             }

@@ -20,8 +20,7 @@
       <TextArea fx:id="journal_Input" layoutX="101.0" layoutY="311.0" prefHeight="234.0" prefWidth="222.0" />
       <TableView fx:id="displayJournalTable" layoutX="515.0" layoutY="177.0" prefHeight="417.0" prefWidth="652.0">
         <columns>
-          <TableColumn fx:id="userJournalList" prefWidth="389.0" text="User Journal" />
-            <TableColumn fx:id="userJournalText" prefWidth="262.0" text="Text" />
+          <TableColumn fx:id="userJournalList" prefWidth="651.0" text="User Journal" />
         </columns>
       </TableView>
       <Button fx:id="journalButton" layoutX="181.0" layoutY="555.0" mnemonicParsing="false" onAction="#insertJournal" prefHeight="26.0" prefWidth="63.0" text="Add" />
