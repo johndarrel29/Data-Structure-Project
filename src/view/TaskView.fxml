@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TaskViewController">
+   <children>
+      <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/page8.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="journalButton" layoutX="963.0" layoutY="62.0" mnemonicParsing="false" onAction="#toJournal" prefHeight="55.0" prefWidth="132.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="journalButton" stylesheets="@../CSS/Styles.css" text="Journal" wrapText="true" />
+      <Button fx:id="homeButton" layoutX="1115.0" layoutY="62.0" mnemonicParsing="false" onAction="#toHomePage" prefHeight="55.0" prefWidth="132.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="homeButton" stylesheets="@../CSS/Styles.css" text="Home" />
+      <Pane layoutX="977.0" layoutY="161.0" prefHeight="200.0" prefWidth="263.0">
+         <children>
+            <Button fx:id="InserttaskButton" layoutX="32.0" layoutY="146.0" mnemonicParsing="false" onAction="#insertTask" prefHeight="34.0" prefWidth="81.0" style="-fx-background-radius: 15; -fx-border-radius: 15;" styleClass="InserttaskButton" stylesheets="@../CSS/Styles.css" text="Insert" />
+            <ChoiceBox fx:id="DaysChoices" layoutX="66.0" layoutY="107.0" prefHeight="23.0" prefWidth="128.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="DaysChoices" stylesheets="@../CSS/Styles.css" />
+            <Button fx:id="deleteButton" layoutX="144.0" layoutY="146.0" mnemonicParsing="false" onAction="#deleteSelectedTask" prefHeight="34.0" prefWidth="81.0" style="-fx-background-radius: 15; -fx-border-radius: 15;" styleClass="deleteButton" stylesheets="@../CSS/Styles.css" text="Delete" />
+            <TextField fx:id="taskInput" layoutX="12.0" layoutY="30.0" prefHeight="70.0" prefWidth="240.0" style="-fx-background-radius: 15; -fx-border-radius: 15;" styleClass="taskInput" stylesheets="@../CSS/Styles.css" />
+         </children>
+      </Pane>
+      <Pane layoutX="41.0" layoutY="291.0" prefHeight="261.0" prefWidth="871.0">
+         <children>
+            <TableView fx:id="mondayTaskTable" layoutX="14.0" layoutY="8.0" prefHeight="237.0" prefWidth="121.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="mondayTaskTable" stylesheets="@../CSS/Styles.css">
+              <columns>
+                <TableColumn fx:id="Monday" prefWidth="120.0000228881836" style="-fx-border-radius: 10; -fx-background-radius: 10;" text="Task" />
+              </columns>
+            </TableView>
+            <TableView fx:id="tuesdayTaskTable" layoutX="160.0" layoutY="8.0" prefHeight="237.0" prefWidth="121.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="tuesdayTaskTable" stylesheets="@../CSS/Styles.css">
+               <columns>
+                  <TableColumn fx:id="Tuesday" prefWidth="119.99998474121094" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="wednesdayTaskTable" layoutX="308.0" layoutY="8.0" prefHeight="237.0" prefWidth="121.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="wednesdayTaskTable" stylesheets="@../CSS/Styles.css">
+               <columns>
+                  <TableColumn fx:id="Wednesday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="thursdayTaskTable" layoutX="455.0" layoutY="8.0" prefHeight="237.0" prefWidth="121.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="thursdayTaskTable" stylesheets="@../CSS/Styles.css">
+               <columns>
+                  <TableColumn fx:id="Thursday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="fridayTaskTable" layoutX="600.0" layoutY="8.0" prefHeight="237.0" prefWidth="120.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="fridayTaskTable" stylesheets="@../CSS/Styles.css">
+               <columns>
+                  <TableColumn fx:id="Friday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+            <TableView fx:id="saturdayTaskTable" layoutX="742.0" layoutY="8.0" prefHeight="237.0" prefWidth="120.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="saturdayTaskTable" stylesheets="@../CSS/Styles.css">
+               <columns>
+                  <TableColumn fx:id="Saturday" prefWidth="118.0" text="Task" />
+               </columns>
+            </TableView>
+         </children>
+      </Pane>
+      <Button fx:id="UndoButton" layoutX="61.0" layoutY="187.0" mnemonicParsing="false" onAction="#undo" prefHeight="36.0" prefWidth="86.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="UndoButton" stylesheets="@../CSS/Styles.css" text="Undo">
+         <font>
+            <Font size="10.0" />
+         </font></Button>
+      <Button fx:id="RedoButton" layoutX="165.0" layoutY="187.0" mnemonicParsing="false" onAction="#redo" prefHeight="36.0" prefWidth="86.0" style="-fx-background-radius: 20; -fx-border-radius: 20;" styleClass="RedoButton" stylesheets="@../CSS/Styles.css" text="Redo" />
+      <TableView fx:id="doneTaskTable" layoutX="990.0" layoutY="440.0" prefHeight="194.0" prefWidth="235.0" style="-fx-background-radius: 20; -fx-background-radius: 20;" styleClass="doneTaskTable" stylesheets="@../CSS/Styles.css" />
+      <Text fx:id="completed_tasks" fill="#faf3a9" layoutX="1011.0" layoutY="428.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-stroke-width: 2; -fx-stroke: #86AAD4;" styleClass="completed_tasks" text="COMPLETED TASKS" textAlignment="CENTER" wrappingWidth="194.69775390625">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <ProgressBar fx:id="progressBar" layoutX="322.0" layoutY="591.0" prefHeight="39.0" prefWidth="464.0" progress="0.17" style="-fx-border-radius: 40;" styleClass="progressBar" stylesheets="@../CSS/Styles.css" />
+      <ProgressIndicator fx:id="progressIndicator" layoutX="809.0" layoutY="591.0" prefHeight="55.0" prefWidth="44.0" progress="0.35" styleClass="progressIndicator" stylesheets="@../CSS/Styles.css" />
+      <Button fx:id="weeklyDone" layoutX="1044.0" layoutY="664.0" mnemonicParsing="false" onAction="#refreshTableAndResetProgress" prefHeight="29.0" prefWidth="128.0" style="-fx-background-radius: 10; -fx-border-radius: 10;" styleClass="weeklyDone" stylesheets="@../CSS/Styles.css" text="Week Done">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Button>
+      <ImageView fx:id="animatedLogo" fitHeight="106.0" fitWidth="140.0" layoutX="26.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/momentumyellow.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>
