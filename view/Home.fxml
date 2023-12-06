@@ -17,27 +17,27 @@
          <children>
             <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/Page5Ulit.png" />
+                  <Image url="@../images/page5.png" />
                </image>
             </ImageView>
-            <ProgressBar fx:id="progressBar" layoutX="90.0" layoutY="447.0" prefHeight="50.0" prefWidth="541.0" progress="0.17" style="-fx-border-radius: 40;" styleClass="progressBar" stylesheets="@../CSS/Styles.css" />
-            <ProgressIndicator fx:id="progressIndicator" layoutX="361.0" layoutY="506.0" prefHeight="55.0" prefWidth="44.0" progress="0.35" styleClass="progressIndicator" stylesheets="@../CSS/Styles.css" />
-            <Label fx:id="lastname_label" layoutX="935.0" layoutY="216.0" prefHeight="93.0" prefWidth="257.0" text="Surname" wrapText="true">
+            <ProgressBar fx:id="progressBar" layoutX="90.0" layoutY="447.0" prefHeight="50.0" prefWidth="541.0" progress="0.0" style="-fx-border-radius: 40;" styleClass="progressBar" stylesheets="@../CSS/Styles.css" />
+            <ProgressIndicator fx:id="progressIndicator" layoutX="361.0" layoutY="506.0" prefHeight="55.0" prefWidth="44.0" progress="0.0" styleClass="progressIndicator" stylesheets="@../CSS/Styles.css" />
+            <Label fx:id="lastname_label" layoutX="935.0" layoutY="216.0" prefHeight="93.0" prefWidth="257.0" styleClass="lastname_label" stylesheets="@../CSS/Styles.css" text="Surname" textFill="#4b5794" wrapText="true">
                <font>
                   <Font size="48.0" />
                </font>
             </Label>
-            <Label fx:id="givenname_label" layoutX="935.0" layoutY="267.0" prefHeight="93.0" prefWidth="257.0" text="Given Name" wrapText="true">
+            <Label fx:id="givenname_label" layoutX="935.0" layoutY="267.0" prefHeight="93.0" prefWidth="257.0" styleClass="givenname_label" stylesheets="@../CSS/Styles.css" text="Given Name" textFill="#4b5794" wrapText="true">
                <font>
                   <Font size="30.0" />
                </font>
             </Label>
-            <Label fx:id="id_label" layoutX="987.0" layoutY="360.0" prefHeight="51.0" prefWidth="189.0" text="xxxx-xxxxxx" wrapText="true">
+            <Label fx:id="id_label" layoutX="987.0" layoutY="360.0" prefHeight="51.0" prefWidth="189.0" styleClass="id_label" stylesheets="@../CSS/Styles.css" text="xxxx-xxxxxx" textFill="#8fafd5" wrapText="true">
                <font>
                   <Font size="30.0" />
                </font>
             </Label>
-            <Label fx:id="program_label" layoutX="791.0" layoutY="360.0" prefHeight="51.0" prefWidth="129.0" text="Program" wrapText="true">
+            <Label fx:id="program_label" layoutX="775.0" layoutY="360.0" prefHeight="51.0" prefWidth="152.0" styleClass="program_label" stylesheets="@../CSS/Styles.css" text="Program" textFill="#8fafd5" wrapText="true">
                <font>
                   <Font size="26.0" />
                </font>
@@ -64,6 +64,16 @@
                   <Font size="82.0" />
                </font>
             </Text>
+            <ImageView fx:id="animatedLogo" fitHeight="106.0" fitWidth="140.0" layoutX="26.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/momentumyellow.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="151.0" fitWidth="166.0" layoutX="123.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/485e83ad5709e90ba5a0cffccb717e08.gif" />
+               </image>
+            </ImageView>
          </children>
       </Pane>
    </children>

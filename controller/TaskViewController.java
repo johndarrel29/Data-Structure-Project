@@ -10,6 +10,10 @@ import java.util.ResourceBundle;
 import java.util.Stack;
 
 import alert.AlertMaker;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -33,9 +37,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import model.DataStored;
 import model.Database;
 import model.ProgressModel;
@@ -52,7 +59,7 @@ public class TaskViewController implements Initializable {
     private Button InserttaskButton, homeButton, journalButton, UndoButton, RedoButton, deleteButton, weeklyDone;
 
     @FXML
-    private TextArea taskInput;
+    private TextField taskInput;
 
     @FXML
     private Text completed_tasks;
@@ -63,6 +70,12 @@ public class TaskViewController implements Initializable {
     @FXML
     ProgressIndicator progressIndicator;
 
+    @FXML
+    private ImageView animatedLogo;
+    
+    private RotateTransition rotateTransition;
+    private Timeline logoFlipTimeline;
+    
     @FXML
     TableView<UserTask> mondayTaskTable, tuesdayTaskTable, wednesdayTaskTable, 
     thursdayTaskTable, fridayTaskTable, saturdayTaskTable;
@@ -113,10 +126,25 @@ public class TaskViewController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-    // Font customFont11 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 17);
-    // completed_tasks.setFont(customFont11);
+    Font customFont11 = Font.loadFont(getClass().getResource("/fonts/AlfaSlabOne-Regular.ttf").toExternalForm(), 17);
+    completed_tasks.setFont(customFont11);
 
+// Animation---------------------------------------
+        rotateTransition = new RotateTransition(Duration.seconds(2), animatedLogo);
+        rotateTransition.setAxis(Rotate.Y_AXIS); 
+        rotateTransition.setFromAngle(0);
+        rotateTransition.setToAngle(180);
 
+        logoFlipTimeline = new Timeline(
+            new KeyFrame(Duration.seconds(0), new KeyValue(animatedLogo.rotateProperty(), 0)),
+            new KeyFrame(Duration.seconds(5), event -> {
+               rotateTransition.playFromStart();
+            })
+        );
+        logoFlipTimeline.setCycleCount(Timeline.INDEFINITE);
+        logoFlipTimeline.play();
+
+// -----------------------------------------------
         ObservableList<String> daysOfWeek = FXCollections.observableArrayList(
             "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
         );
@@ -166,7 +194,7 @@ public class TaskViewController implements Initializable {
         retrieveColumnFriday = createRetrieveColumn();
         retrieveColumnSaturday = createRetrieveColumn();
 
-        doneListColumn = new TableColumn<>("Completed Task              ");
+        doneListColumn = new TableColumn<>();
         doneListColumn.setCellValueFactory(new PropertyValueFactory<>("Task"));
 
         // Add the "doneList" column to the doneTaskTable
@@ -420,6 +448,7 @@ public class TaskViewController implements Initializable {
                         } else {
                             // Display a message or take appropriate action if the checkbox is not checked
                             System.out.println("Checkbox is not checked. Cannot retrieve data.");
+                            
                         }
                     });
                 }

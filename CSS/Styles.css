@@ -560,3 +560,163 @@
     -fx-cursor: hand;
 }
 
+/* JOOURNAL */
+
+.journal_Input {
+    -fx-background-color: white; 
+}
+
+.journal_Input .scroll-pane {
+    -fx-background-color: transparent;
+}
+.journal_Input .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+.journal_Input .scroll-pane .content{
+    -fx-background-color: transparent;
+}
+
+.displayJournalTable {
+    -fx-background-color: white; 
+}
+
+.displayJournalTable  .column-header, .tuesdayTaskTable .filler  {
+    -fx-background-color:  white;
+    -fx-border-width: 10px;
+    -fx-background-radius: 10px; 
+    -fx-radius: 10px; 
+    -fx-text-fill: white;
+}
+
+.journalTitle_Input {
+    -fx-background-color: white; 
+}
+
+.journalTitle_Input .scroll-pane {
+    -fx-background-color: transparent;
+}
+.journalTitle_Input .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+.journalTitle_Input .scroll-pane .content{
+    -fx-background-color: transparent;
+}
+
+.toHomeBttn {
+    -fx-font-family: "Alfa Slab One";
+    -fx-font-weight: bold;
+    -fx-background-color: #ffffff; 
+    -fx-text-fill: #8FAFD5; 
+    -fx-font-size: 20px; 
+    -fx-border-width: 5px;
+    -fx-border-color: #8FAFD5;
+    -fx-cursor: hand;
+ }
+
+
+
+.toHomeBttn:hover {
+-fx-background-color: #8FAFD5; 
+-fx-text-fill: white;
+-fx-border-width: 5px;
+-fx-border-color: white;
+-fx-cursor: hand;
+}
+.toTaskViewBttn {
+-fx-font-family: "Alfa Slab One";
+-fx-font-weight: bold;
+-fx-background-color: #FAF3A9; 
+-fx-text-fill: #86AAD4; 
+-fx-font-size: 20px; 
+-fx-border-width: 5px;
+-fx-border-color: #8FAFD5;
+-fx-cursor: hand;
+}
+
+.toTaskViewBttn:hover {
+-fx-background-color: #86AAD4; 
+-fx-text-fill: #FAF3A9;
+-fx-border-width: 5px;
+-fx-border-color: #FAF3A9;
+-fx-cursor: hand;
+}
+
+.delJournalButton {
+-fx-font-family: "Alfa Slab One";
+-fx-font-weight: bold;
+-fx-background-color: white; 
+-fx-text-fill: #86AAD4; 
+-fx-font-size: 12px; 
+-fx-border-width: 3px;
+-fx-border-color: #8FAFD5;
+-fx-cursor: hand;
+}
+
+.delJournalButton:hover {
+-fx-background-color: #86AAD4; 
+-fx-text-fill:white;
+-fx-border-width: 5px;
+-fx-border-color: white;
+-fx-cursor: hand;
+
+}
+
+.UndoButton1 {
+    -fx-font-family: "Alfa Slab One";
+    -fx-font-weight: bold;
+    -fx-background-color: #FAF3A9; 
+    -fx-text-fill: #86AAD4; 
+    -fx-font-size: 12px; 
+    -fx-border-width: 3px;
+    -fx-border-color: #8FAFD5;
+    -fx-cursor: hand;
+}
+
+.UndoButton1:hover {
+    -fx-background-color: #86AAD4; 
+    -fx-text-fill:#FAF3A9;
+    -fx-border-width: 5px;
+    -fx-border-color: #FAF3A9;
+    -fx-cursor: hand;
+    
+}
+
+.RedoButton1 {
+    -fx-font-family: "Alfa Slab One";
+    -fx-font-weight: bold;
+    -fx-background-color: white; 
+    -fx-text-fill: #86AAD4; 
+    -fx-font-size: 12px; 
+    -fx-border-width: 3px;
+    -fx-border-color: #8FAFD5;
+    -fx-cursor: hand;
+}
+        
+.RedoButton1:hover {
+    -fx-background-color: #86AAD4; 
+    -fx-text-fill:white;
+    -fx-border-width: 5px;
+    -fx-border-color: white;
+    -fx-cursor: hand;
+        
+}
+
+.seeMoreButton {
+    -fx-font-family: "Alfa Slab One";
+    -fx-font-weight: bold;
+    -fx-background-color: #FAF3A9; 
+    -fx-text-fill: #86AAD4; 
+    -fx-font-size: 12px; 
+    -fx-border-width: 3px;
+    -fx-border-color: #8FAFD5;
+    -fx-cursor: hand;
+}
+
+.seeMoreButton:hover {
+    -fx-background-color: #86AAD4; 
+    -fx-text-fill:#FAF3A9;
+    -fx-border-width: 5px;
+    -fx-border-color: #FAF3A9;
+    -fx-cursor: hand;
+    
+}

@@ -116,23 +116,23 @@ public class HomeController implements Initializable{
         displayUser();
 
 
-// Animation---------------------------------------
-        // rotateTransition = new RotateTransition(Duration.seconds(2), animatedLogo);
-        // rotateTransition.setAxis(Rotate.Y_AXIS); 
-        // rotateTransition.setFromAngle(0);
-        // rotateTransition.setToAngle(180);
+        // Animation---------------------------------------
+        rotateTransition = new RotateTransition(Duration.seconds(2), animatedLogo);
+        rotateTransition.setAxis(Rotate.Y_AXIS); 
+        rotateTransition.setFromAngle(0);
+        rotateTransition.setToAngle(180);
 
-        // logoFlipTimeline = new Timeline(
-        //     new KeyFrame(Duration.seconds(0), new KeyValue(animatedLogo.rotateProperty(), 0)),
-        //     new KeyFrame(Duration.seconds(5), event -> {
-        //        rotateTransition.playFromStart();
-        //     })
-        // );
-        // logoFlipTimeline.setCycleCount(Timeline.INDEFINITE);
-        // logoFlipTimeline.play();
+        logoFlipTimeline = new Timeline(
+            new KeyFrame(Duration.seconds(0), new KeyValue(animatedLogo.rotateProperty(), 0)),
+            new KeyFrame(Duration.seconds(5), event -> {
+               rotateTransition.playFromStart();
+            })
+        );
+        logoFlipTimeline.setCycleCount(Timeline.INDEFINITE);
+        logoFlipTimeline.play();
 
 
-// prog bar -----------------------------
+        // prog bar -----------------------------
         progressModel = ProgressModelManager.getSharedProgressModel();
 
         if (progressModel != null) {
@@ -331,8 +331,6 @@ public StudentID getStudentData() {
         stage.show();
 
     }
-
-
 
 
 }
